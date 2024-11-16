@@ -23,5 +23,9 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 /venv
+<<<<<<< Updated upstream
 /env
 
+=======
+/env
+>>>>>>> Stashed changes
