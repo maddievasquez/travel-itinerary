@@ -23,4 +23,4 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 /venv
-server/.env
+.env
