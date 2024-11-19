@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'user',  # Custom app
-    'itinerary', # Custom app
-    'location',  # Custom app
-    'activity' # Custom app
+    'server.apps.user', # Custom app
+    'server.apps.itinerary', # Custom app
+    'server.apps.location',  # Custom app
+    'server.apps.activity' # Custom app
 ]
 
 MIDDLEWARE = [
@@ -134,6 +134,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+AUTH_USER_MODEL = 'user.User'
 
 STATIC_URL = 'static/'
 
