@@ -27,13 +27,13 @@
 
 - [x] Set up Django Rest Framework (DRF).
 - [x] Configure MySQL database connection.
-- [ ] Create and migrate database tables:
-  - [ ] User table
-  - [ ] Itinerary table
-  - [ ] Activity table
-  - [ ] Place table
-  - [ ] Category table
-  - [ ] Recommendation table
+- [x] Create and migrate database tables:
+  - [x] User table
+  - [x] Itinerary table
+  - [x] Activity table
+  - [x] Place table
+  - [x] Category table
+  - [x] Recommendation table
 - [ ] Develop API endpoints:
   - [ ] User authentication (sign-up, login, logout, Google OAuth)
   - [ ] CRUD operations for itineraries

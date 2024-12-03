@@ -16,10 +16,41 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+# server/urls.py
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+# Schema view to generate Swagger documentation
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Your API",
+      default_version='v1',
+      description="Test description",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@yourapi.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Admin interface
+    path('admin/', admin.site.urls),
+    path('api/users/', include('server.apps.user.urls')),  # User app URLs
+    path('api/auth/', include('server.apps.user.urls')),  # Include user app URLs
+
+    path('api/locations/', include('server.apps.location.urls')),  # Location app URLs
+    path('api/activities/', include('server.apps.activity.urls')),  # Activity app URLs
+    path('api/itineraries/', include('server.apps.itinerary.urls')),  # Itinerary app URLs
+     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('swagger/', schema_view.as_view(), name='swagger'),
+     path('auth/', include('social_django.urls', namespace='social')),
+]
+
+
     # path('api/users/', include('user.urls')),  # User-related endpoints
     # path('api/itineraries/', include('itinerary.urls')),  # Itinerary-related endpoints
     # path('api/locations/', include('location.urls')),  # Location-related endpoints
     # path('api/activities/', include('activity.urls')),  # Activity-related endpoints
-]
