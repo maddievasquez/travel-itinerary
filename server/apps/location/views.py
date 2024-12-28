@@ -1,3 +1,23 @@
-from django.shortcuts import render
+# location/views.py
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Location  # Assuming your Location model is in models.py
+from .serializers import LocationSerializer  # Assuming you have a serializer for Location
+from .filters import LocationFilter  # Import your custom filter
+# Location List View - to get all locations
+# List view with filters for Location
+class LocationListView(generics.ListAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+    filter_backends = [DjangoFilterBackend]  # Enable filtering
+    filterset_class = LocationFilter  # Use the custom filter class
 
-# Create your views here.
+# Locations by City View - to filter locations based on the city
+class LocationsByCityView(APIView):
+    def get(self, request, city_name):
+        """Returns a list of locations filtered by the city."""
+        locations = Location.objects.filter(city__iexact=city_name)
+        serializer = LocationSerializer(locations, many=True)
+        return Response(serializer.data)

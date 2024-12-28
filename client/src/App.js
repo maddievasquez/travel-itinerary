@@ -77,7 +77,7 @@ import Header from './components/header';
 import HeroSection from './components/heroSection';
 import Footer from './components/footer';
 import LoginPage from './components/loginPage';
-//import SignupPage from './components/signupPage'; // Optional: Add SignupPage
+import SignupPage from './components/signupPage'; 
 
 function App() {
   return (
@@ -94,6 +94,10 @@ function App() {
 
           {/* Login Page */}
           <Route path="/login" element={<LoginPage />} />
+            
+            {/* Signup Page */}
+
+          <Route path="/signup" element={<SignupPage />} />
           
         </Routes> 
 

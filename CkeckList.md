@@ -29,11 +29,19 @@
 - [x] Configure MySQL database connection.
 - [x] Create and migrate database tables:
   - [x] User table
+<<<<<<< HEAD
   - [ ] Itinerary table
   - [ ] Activity table
   - [ ] Place table
   - [ ] Category table
   - [ ] Recommendation table
+=======
+  - [x] Itinerary table
+  - [x] Activity table
+  - [x] Place table
+  - [x] Category table
+  - [x] Recommendation table
+>>>>>>> 880bc2f0b276ed1d1e12cc5d0ef19df36371f9fd
 - [ ] Develop API endpoints:
   - [ ] User authentication (sign-up, login, logout, Google OAuth)
   - [ ] CRUD operations for itineraries
