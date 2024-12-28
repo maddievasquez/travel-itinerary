@@ -3,10 +3,10 @@
 ## Front-End Tasks
 
 - [ x] Set up the React environment.
-- [ ] Install and configure Tailwind CSS for styling.
+- [x] Install and configure Tailwind CSS for styling.
 - [ ] Create reusable UI components:
-  - [ ] Header
-  - [ ] Footer
+  - [x] Header
+  - [x] Footer
   - [ ] Sidebar/Navigation
   - [ ] Itinerary card
   - [ ] User profile components
@@ -15,7 +15,7 @@
   - [ ] Login form
   - [ ] Google OAuth integration
 - [ ] Create main pages:
-  - [ ] Home page
+  - [x] Home page
   - [ ] Itinerary builder page
   - [ ] User dashboard
   - [ ] Activity search and filter page
@@ -27,8 +27,8 @@
 
 - [x] Set up Django Rest Framework (DRF).
 - [x] Configure MySQL database connection.
-- [ ] Create and migrate database tables:
-  - [ ] User table
+- [x] Create and migrate database tables:
+  - [x] User table
   - [ ] Itinerary table
   - [ ] Activity table
   - [ ] Place table

@@ -33,7 +33,7 @@ const paragraphStyle = { fontSize: '18px', margin: '20px 0' };
 const buttonContainer = { display: 'flex', gap: '15px' };
 const startButton = {
   textDecoration: 'none',
-  backgroundColor: '#90EE90',
+  backgroundColor: '#65B891',
   color: '#FFF',
   padding: '10px 20px',
   borderRadius: '5px',
