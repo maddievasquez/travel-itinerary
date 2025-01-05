@@ -1,7 +1,4 @@
 
-```markdown
-# Project README
-
 ## Overview
 
 A Django-based web application with a MySQL database and React front-end. The app allows users to manage itineraries, activities, places, and recommendations via API endpoints, utilizing Google OAuth for user authentication.
@@ -121,4 +118,3 @@ SECRET_KEY=your_secret_key
 
 - Implement missing CRUD operations and activity search/filter.
 - Complete front-end integration and deployment.
-```
