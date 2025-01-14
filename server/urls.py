@@ -21,6 +21,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 # Schema view to generate Swagger documentation
 schema_view = get_schema_view(
@@ -47,10 +48,9 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('swagger/', schema_view.as_view(), name='swagger'),
      path('auth/', include('social_django.urls', namespace='social')),
+
+      path('api/schema/', SpectacularAPIView.as_view(), name='schema'),  # OpenAPI Schema
+    path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+      
 ]
-
-
-    # path('api/users/', include('user.urls')),  # User-related endpoints
-    # path('api/itineraries/', include('itinerary.urls')),  # Itinerary-related endpoints
-    # path('api/locations/', include('location.urls')),  # Location-related endpoints
-    # path('api/activities/', include('activity.urls')),  # Activity-related endpoints

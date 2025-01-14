@@ -44,8 +44,11 @@ INSTALLED_APPS = [
     'server.apps.location',  # Custom app
     'server.apps.activity', # Custom app
     'django_filters',
-     'drf_yasg',
+    'drf_yasg',
     'rest_framework_simplejwt',
+    'social_django',
+    'corsheaders',
+     'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -149,6 +153,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10, #Pagination
 
@@ -167,8 +172,22 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<your-google-client-id>'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<your-google-client-secret>'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1040456753333-vha8gqh114f9n7q6c3qgbbgq0t0uh41o.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 
 LOGIN_REDIRECT_URL = '/'  # URL to redirect after login
 LOGOUT_REDIRECT_URL = '/login/'  # URL to redirect after logout
+
+# Simple JWT settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React (or any other frontend) development server
+    "https://your-frontend-domain.com",  # Add your deployed frontend URL here
+]
