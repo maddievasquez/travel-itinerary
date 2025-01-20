@@ -5,18 +5,19 @@ import {
   Route,
   Link,
 } from "react-router-dom";
-import LoginPage from "./components/Login/LoginPage";
+import HomePage from "./components/HomePage";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SingUpPage";
 
 class AppRoutes extends Component {
     render() {
       return (
         <BrowserRouter>
-          <MainContainer>
             <Routes>
-              {/* <Route path="/" element={<Homepage />} /> */}
+              <Route path="/" element={< HomePage/>} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
             </Routes>
-          </MainContainer>
 
   
         </BrowserRouter>

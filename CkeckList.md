@@ -6,12 +6,13 @@
 - [x] Install and configure Tailwind CSS for styling.
 - [ ] Create reusable UI components:
   - [x] Header
+  - [ ] 
   - [x] Footer
   - [ ] Sidebar/Navigation
   - [ ] Itinerary card
   - [ ] User profile components
 - [ ] Implement user authentication UI:
-  - [ ] Sign-up form
+  - [x] Sign-up form
   - [ ] Login form
   - [ ] Google OAuth integration
 - [ ] Create main pages:
@@ -29,32 +30,24 @@
 - [x] Configure MySQL database connection.
 - [x] Create and migrate database tables:
   - [x] User table
-<<<<<<< HEAD
-  - [ ] Itinerary table
-  - [ ] Activity table
-  - [ ] Place table
-  - [ ] Category table
-  - [ ] Recommendation table
-=======
   - [x] Itinerary table
   - [x] Activity table
   - [x] Place table
   - [x] Category table
   - [x] Recommendation table
->>>>>>> 880bc2f0b276ed1d1e12cc5d0ef19df36371f9fd
-- [ ] Develop API endpoints:
+- [x] Develop API endpoints:
   - [ ] User authentication (sign-up, login, logout, Google OAuth)
-  - [ ] CRUD operations for itineraries
-  - [ ] Search and filter for activities
-  - [ ] Favorite places functionality
-  - [ ] Recommendations
+  - [x] CRUD operations for itineraries [todo: test it]
+  - [x] Search and filter for activities [todo: test it]
+- [ ] Develop View for API each endpoint
+- [ ] Develop Serializer for API each endpoint
 - [ ] Set up database migrations and seed initial data.
-- [ ] Configure environment variables for sensitive information (e.g., database credentials, API keys).
+- [x] Configure environment variables for sensitive information (e.g., database credentials, API keys).
 - [ ] Add security measures (e.g., input validation, CSRF protection).
 
 ## Integration Tasks
 
-- [ ] Test API endpoints with Postman/Insomnia.
+- [x] Test API endpoints with Postman/Insomnia. 
 - [ ] Connect React front-end to Django back-end.
 - [ ] Implement state management in React (e.g., Redux or Context API).
 - [ ] Test front-end and back-end communication.

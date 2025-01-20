@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'social_django',
     'corsheaders',
-     'drf_spectacular',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -158,12 +158,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10, #Pagination
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
          'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated', // TODO: set it for view specific permissions rather than global
 
     ],
 }
@@ -187,6 +185,9 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+CORS_ORIGIN_ALLOW_ALL=True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React (or any other frontend) development server
     "https://your-frontend-domain.com",  # Add your deployed frontend URL here
