@@ -1,7 +1,6 @@
-"use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, MapPin } from "lucide-react";
+import { RightSidebar } from "./right-sidebar";
 
 export default function HomePage() {
   const [recentTrips] = useState([
@@ -33,14 +32,8 @@ export default function HomePage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold">Travel Planner</h1>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gray-50 flex">
+      <main className="container mx-auto px-4 py-6 flex-1">
         {/* Create New Itinerary */}
         <section className="mb-8">
           <div className="bg-white p-4 shadow-md rounded-lg">
@@ -114,6 +107,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+      <RightSidebar />
     </div>
   );
 }
