@@ -22,5 +22,5 @@ client/env.test.local
 client/yarn-debug.log*
 client/yarn-error.log*
 
-/venv
+.venv
 .env
