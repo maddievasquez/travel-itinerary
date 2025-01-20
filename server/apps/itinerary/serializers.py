@@ -5,4 +5,4 @@ from .models import Itinerary
 class ItinerarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Itinerary
-        fields = '__all__'
+        fields = ['user', 'title', 'city', 'start_date', 'end_date', 'description', 'created_at', 'updated_at']
