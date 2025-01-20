@@ -1,0 +1,80 @@
+{
+    "locations": [
+      {
+        "city": "Dublin",
+        "landmarks": [
+          { "name": "Trinity College Library", "address": "College St, Dublin", "latitude": 53.3438, "longitude": -6.2566, "category": "Historic" },
+          { "name": "Guinness Storehouse", "address": "St. James's Gate, Dublin", "latitude": 53.3418, "longitude": -6.2868, "category": "Attraction" },
+          { "name": "Dublin Castle", "address": "Dame St, Dublin", "latitude": 53.3429, "longitude": -6.2673, "category": "Historic" },
+          { "name": "St. Patrick's Cathedral", "address": "St Patrick's Close, Dublin", "latitude": 53.3395, "longitude": -6.2711, "category": "Religious" },
+          { "name": "Phoenix Park", "address": "Phoenix Park, Dublin", "latitude": 53.3566, "longitude": -6.3290, "category": "Park" },
+          { "name": "Ha'penny Bridge", "address": "Liffey St, Dublin", "latitude": 53.3464, "longitude": -6.2631, "category": "Bridge" },
+          { "name": "Kilmainham Gaol", "address": "Inchicore Rd, Dublin", "latitude": 53.3422, "longitude": -6.3107, "category": "Historic" },
+          { "name": "Dublin Zoo", "address": "Phoenix Park, Dublin", "latitude": 53.3561, "longitude": -6.3044, "category": "Attraction" },
+          { "name": "Merrion Square", "address": "Merrion St, Dublin", "latitude": 53.3402, "longitude": -6.2495, "category": "Park" },
+          { "name": "Temple Bar", "address": "Temple Bar, Dublin", "latitude": 53.3455, "longitude": -6.2630, "category": "Cultural" }
+        ]
+      },
+      {
+        "city": "New York",
+        "landmarks": [
+          { "name": "Statue of Liberty", "address": "Liberty Island, New York", "latitude": 40.6892, "longitude": -74.0445, "category": "Historic" },
+          { "name": "Central Park", "address": "Central Park, New York", "latitude": 40.7851, "longitude": -73.9683, "category": "Park" },
+          { "name": "Empire State Building", "address": "20 W 34th St, New York", "latitude": 40.7488, "longitude": -73.9857, "category": "Skyscraper" },
+          { "name": "Times Square", "address": "Manhattan, New York", "latitude": 40.7580, "longitude": -73.9855, "category": "Cultural" },
+          { "name": "Brooklyn Bridge", "address": "Brooklyn Bridge, New York", "latitude": 40.7061, "longitude": -73.9969, "category": "Bridge" },
+          { "name": "Metropolitan Museum of Art", "address": "1000 5th Ave, New York", "latitude": 40.7794, "longitude": -73.9632, "category": "Museum" },
+          { "name": "Rockefeller Center", "address": "45 Rockefeller Plaza, New York", "latitude": 40.7587, "longitude": -73.9787, "category": "Attraction" },
+          { "name": "One World Trade Center", "address": "285 Fulton St, New York", "latitude": 40.7127, "longitude": -74.0134, "category": "Skyscraper" },
+          { "name": "Broadway", "address": "Broadway, New York", "latitude": 40.7590, "longitude": -73.9845, "category": "Cultural" },
+          { "name": "Chrysler Building", "address": "405 Lexington Ave, New York", "latitude": 40.7516, "longitude": -73.9755, "category": "Skyscraper" }
+        ]
+      },
+      {
+        "city": "Madrid",
+        "landmarks": [
+          { "name": "Prado Museum", "address": "Calle Ruiz de Alarcón 23, Madrid", "latitude": 40.4138, "longitude": -3.6921, "category": "Museum" },
+          { "name": "Royal Palace of Madrid", "address": "Calle de Bailén, Madrid", "latitude": 40.4179, "longitude": -3.7143, "category": "Historic" },
+          { "name": "Retiro Park", "address": "Plaza de la Independencia, Madrid", "latitude": 40.4153, "longitude": -3.6841, "category": "Park" },
+          { "name": "Puerta del Sol", "address": "Puerta del Sol, Madrid", "latitude": 40.4169, "longitude": -3.7035, "category": "Cultural" },
+          { "name": "Gran Via", "address": "Gran Via, Madrid", "latitude": 40.4203, "longitude": -3.7057, "category": "Cultural" },
+          { "name": "Temple of Debod", "address": "Calle Ferraz, Madrid", "latitude": 40.4240, "longitude": -3.7176, "category": "Historic" },
+          { "name": "Plaza Mayor", "address": "Plaza Mayor, Madrid", "latitude": 40.4155, "longitude": -3.7074, "category": "Cultural" },
+          { "name": "Santiago Bernabéu Stadium", "address": "Av. de Concha Espina 1, Madrid", "latitude": 40.4531, "longitude": -3.6883, "category": "Attraction" },
+          { "name": "Thyssen-Bornemisza Museum", "address": "Paseo del Prado 8, Madrid", "latitude": 40.4163, "longitude": -3.6940, "category": "Museum" },
+          { "name": "Las Ventas Bullring", "address": "Calle de Alcalá 237, Madrid", "latitude": 40.4321, "longitude": -3.6636, "category": "Cultural" }
+        ]
+      },
+      {
+        "city": "London",
+        "landmarks": [
+          { "name": "Big Ben", "address": "Westminster, London", "latitude": 51.5007, "longitude": -0.1246, "category": "Historic" },
+          { "name": "London Eye", "address": "Lambeth, London", "latitude": 51.5033, "longitude": -0.1195, "category": "Attraction" },
+          { "name": "Tower of London", "address": "St Katharine's & Wapping, London", "latitude": 51.5081, "longitude": -0.0759, "category": "Historic" },
+          { "name": "Buckingham Palace", "address": "Westminster, London", "latitude": 51.5014, "longitude": -0.1419, "category": "Attraction" },
+          { "name": "British Museum", "address": "Great Russell St, London", "latitude": 51.5194, "longitude": -0.1270, "category": "Museum" },
+          { "name": "Trafalgar Square", "address": "Charing Cross, London", "latitude": 51.5081, "longitude": -0.1281, "category": "Cultural" },
+          { "name": "Hyde Park", "address": "Hyde Park, London", "latitude": 51.5073, "longitude": -0.1657, "category": "Park" },
+          { "name": "St. Paul's Cathedral", "address": "St. Paul's Churchyard, London", "latitude": 51.5138, "longitude": -0.0984, "category": "Religious" },
+          { "name": "Westminster Abbey", "address": "20 Deans Yd, London", "latitude": 51.4993, "longitude": -0.1273, "category": "Religious" },
+          { "name": "Camden Market", "address": "Camden Lock Pl, London", "latitude": 51.5414, "longitude": -0.1466, "category": "Cultural" }
+        ]
+      },
+      {
+        "city": "Paris",
+        "landmarks": [
+          { "name": "Eiffel Tower", "address": "Champ de Mars, Paris", "latitude": 48.8584, "longitude": 2.2945, "category": "Historic" },
+          { "name": "Louvre Museum", "address": "Rue de Rivoli, Paris", "latitude": 48.8606, "longitude": 2.3376, "category": "Museum" },
+          { "name": "Notre-Dame Cathedral", "address": "6 Parvis Notre-Dame, Paris", "latitude": 48.8530, "longitude": 2.3499, "category": "Religious" },
+          { "name": "Sacré-Cœur Basilica", "address": "35 Rue du Chevalier de la Barre, Paris", "latitude": 48.8867, "longitude": 2.3431, "category": "Religious" },
+          { "name": "Champs-Élysées", "address": "Av. des Champs-Élysées, Paris", "latitude": 48.8566, "longitude": 2.3522, "category": "Cultural" },
+          { "name": "Musée d'Orsay", "address": "1 Rue de la Légion d'Honneur, Paris", "latitude": 48.8600, "longitude": 2.3266, "category": "Museum" },
+          { "name": "Montmartre", "address": "Montmartre, Paris", "latitude": 48.8867, "longitude": 2.3431, "category": "Cultural" },
+          { "name": "Place de la Concorde", "address": "Place de la Concorde, Paris", "latitude": 48.8656, "longitude": 2.3212, "category": "Cultural" },
+          { "name": "Palace of Versailles", "address": "Place d'Armes, Versailles", "latitude": 48.8049, "longitude": 2.1204, "category": "Historic" },
+          { "name": "Luxembourg Gardens", "address": "75006 Paris", "latitude": 48.8462, "longitude": 2.3372, "category": "Park" }
+        ]
+      }
+    ]
+  }
+  
