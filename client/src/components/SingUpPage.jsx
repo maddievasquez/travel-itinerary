@@ -7,7 +7,7 @@ function SignupPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }, // Destructure errors from formState
   } = useForm();
 
   const navigate = useNavigate();
@@ -47,11 +47,11 @@ function SignupPage() {
           setMessage("Signup failed. Please try again.");
         }
       } else {
-        setMessage("An unexpected error occurred. Please try again.");
+        setMessage("An unexpected error occurred. Please try again."); 
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("An user with this email already exists.");
+      setMessage("An user with this email already exists."); // Handle generic errors
     }
   };
 

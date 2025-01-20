@@ -14,8 +14,7 @@ class User(AbstractUser):
     # - is_staff
     # - is_active
     # - date_joined
-    # (and others)
-
+    
     # Additional fields from UserProfile:
     image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
 
