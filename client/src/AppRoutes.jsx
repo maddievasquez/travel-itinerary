@@ -14,13 +14,12 @@ class AppRoutes extends Component {
     render() {
       return (
         <BrowserRouter>
-        <Navbar >
+    
             <Routes>
               <Route path="/" element={< HomePage/>} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
             </Routes>
-          </Navbar>
   
         </BrowserRouter>
       );

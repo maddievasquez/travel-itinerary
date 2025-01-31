@@ -9,8 +9,8 @@ from .filters import LocationFilter  # Import your custom filter
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import JsonResponse
 from rest_framework.renderers import JSONRenderer
-from .models import Activity  # Assuming your Activity model is in models.py
-from .serializers import ActivitySerializer  # Assuming you have a serializer for Activity
+# from .models import Activity  # Assuming your Activity model is in models.py
+from server.apps.activity.serializers import ActivitySerializer  # Assuming you have a serializer for Activity
 from .serializers import LocationSerializer
 from .models import Location
 # Location List View - to get all locations

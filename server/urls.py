@@ -50,7 +50,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('server.apps.user.urls')),  # User app URLs
     path('api/auth/', include('server.apps.user.urls')),  # Include user app URLs
-     path('api/itinerary/', include('itinerary.urls')),
+    # path('api/itinerary/', include('itinerary.urls')),
      
     path('api/locations/', include('server.apps.location.urls')),  # Location app URLs
     path('api/activities/', include('server.apps.activity.urls')),  # Activity app URLs
