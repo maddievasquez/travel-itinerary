@@ -5,13 +5,6 @@ import {
     Route,
     Link,
   } from "react-router-dom";
-interface Location {
-  id: number;
-  name: string;
-  day: number;
-  lat: number;
-  lng: number;
-}
 
 export default function ItineraryResults({ city, startDate, endDate }: { city: string; startDate: string; endDate: string }) {
   const [locations, setLocations] = useState<Location[]>([]);
