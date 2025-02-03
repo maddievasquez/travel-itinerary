@@ -25,6 +25,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from server.apps.itinerary.views import ItineraryViewSet
 from server.apps.activity.views import ActivityViewSet
+from server.apps.location.views import LocationListView, LocationsByCityView, get_options_by_city
 # Schema view to generate Swagger documentation
 schema_view = get_schema_view(
    openapi.Info(
@@ -51,7 +52,9 @@ urlpatterns = [
     path('api/users/', include('server.apps.user.urls')),  # User app URLs
     path('api/auth/', include('server.apps.user.urls')),  # Include user app URLs
     # path('api/itinerary/', include('itinerary.urls')),
-     
+      path('locations/', LocationListView.as_view(), name='location-list'),
+    path('locations/<str:city_name>/', LocationsByCityView.as_view(), name='locations-by-city'),
+    path('options/', get_options_by_city, name='get-options-by-city'),
     path('api/locations/', include('server.apps.location.urls')),  # Location app URLs
     path('api/activities/', include('server.apps.activity.urls')),  # Activity app URLs
     path('api/itineraries/', include('server.apps.itinerary.urls')),  # Itinerary app URLs
