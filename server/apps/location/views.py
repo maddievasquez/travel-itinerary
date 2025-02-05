@@ -10,7 +10,7 @@ from .filters import LocationFilter  # Import your custom filter
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import JsonResponse
 from math import radians, sin, cos, sqrt, atan2
-
+from django.views.decorators.csrf import csrf_exempt
 # Location List View - to get all locations
 class LocationListView(generics.ListAPIView):
     queryset = Location.objects.all()
@@ -62,7 +62,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c  # Distance in km
-
+@csrf_exempt  # 👈 This disables CSRF verification for this endpoint
 def generate_itinerary(locations):
     """Distribute locations across days based on proximity (max 3-4 locations per day)."""
     itinerary = []

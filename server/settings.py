@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'social_django',
     'corsheaders',
     'drf_spectacular',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
