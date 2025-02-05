@@ -1,7 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
-# activity/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,8 +5,7 @@ from .models import Activity
 from .serializers import ActivitySerializer
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import action
-from rest_framework.response import Response
+
 class ActivityListView(APIView):
     def get(self, request):
         """Returns a list of all activities."""
@@ -24,6 +19,7 @@ class ActivityListView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class ActivityViewSet(ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer

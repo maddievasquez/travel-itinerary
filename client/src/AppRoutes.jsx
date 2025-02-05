@@ -8,14 +8,15 @@ import {
 import HomePage from "./components/HomePage";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SingUpPage";
-import Navbar from "./components/NavBar";
+import Navbar from "./components/Nav-menu";
 
 class AppRoutes extends Component {
     render() {
       return (
         <BrowserRouter>
-    
+    <Navbar />
             <Routes>
+              
               <Route path="/" element={< HomePage/>} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
