@@ -5,11 +5,18 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Location
 from server.apps.activity.models import Activity
+from server.apps.itinerary.models import Itinerary
 from .serializers import LocationSerializer
 from server.apps.activity.serializers import ActivitySerializer
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime, timedelta
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+import random
+import googlemaps
+from django.conf import settings
+
+# Initialize the Google Maps client with the API key from the environment variable
+gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
 
 # ✅ Function to calculate distance using Haversine formula
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -21,7 +28,18 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c  # Distance in km
 
-#  Function to generate itinerary based on number of days
+# Function to get place details from Google Places API
+def get_place_details(place_name, city):
+    """Retrieve place details from Google Places API."""
+    query = f"{place_name}, {city}"
+    places_result = gmaps.places(query=query)
+    if places_result['status'] == 'OK' and places_result['results']:
+        place_id = places_result['results'][0]['place_id']
+        place_details = gmaps.place(place_id=place_id)
+        return place_details.get('result', {})
+    return {}
+
+# Function to generate itinerary based on number of days
 def generate_itinerary(locations, num_days):
     """Distribute locations evenly over the number of days (3-4 locations per day)."""
     itinerary = []
@@ -63,6 +81,75 @@ def generate_itinerary(locations, num_days):
 
     return itinerary
 
+# Function to generate itinerary with activities
+def generate_itinerary_with_activities(user, city, start_date, end_date, locations):
+    """Generates an itinerary and auto-populates activities."""
+    itinerary = Itinerary.objects.create(
+        user=user,
+        title=f"{city} Trip {start_date} - {end_date}",
+        city=city,
+        start_date=start_date,
+        end_date=end_date,
+        description=f"Generated itinerary for {city}."
+    )
+
+    num_days = (end_date - start_date).days + 1
+    used = set()
+    locations = list(locations)
+    locations.sort(key=lambda loc: (float(loc.latitude), float(loc.longitude)))  
+
+    daily_limit = 4  # Max 4 locations per day
+    locations_per_day = max(3, min(daily_limit, len(locations) // num_days))
+
+    day = 1
+    itinerary_data = []
+
+    while len(used) < len(locations) and day <= num_days:
+        day_locations = []
+        start_loc = next((loc for loc in locations if loc.id not in used), None)
+        if not start_loc:
+            break
+        day_locations.append(start_loc)
+        used.add(start_loc.id)
+
+        for loc in locations:
+            if loc.id not in used:
+                dist = calculate_distance(
+                    float(start_loc.latitude), float(start_loc.longitude),
+                    float(loc.latitude), float(loc.longitude)
+                )
+                if dist < 15:
+                    day_locations.append(loc)
+                    used.add(loc.id)
+                if len(day_locations) >= locations_per_day:
+                    break
+
+        activities = []
+        for loc in day_locations:
+            activity_desc = random.choice(ACTIVITY_TEMPLATES.get(loc.category, ["Explore {name}"])).format(name=loc.name)
+            place_details = get_place_details(loc.name, city)
+            price_level = place_details.get('price_level', random.randint(1, 4))  # Random price level if not available
+            activity = Activity.objects.create(
+                itinerary=itinerary,
+                location=loc,
+                description=activity_desc,
+                date=start_date + timedelta(days=day - 1),
+                start_time="10:00",
+                end_time="18:00",
+                cost=price_level * 10,  # Example: Convert price level to cost
+                category=loc.category,
+                city=city
+            )
+            activities.append(activity)
+
+        itinerary_data.append({
+            "day": day,
+            "locations": LocationSerializer(day_locations, many=True).data,
+            "activities": ActivitySerializer(activities, many=True).data
+        })
+        day += 1
+
+    return itinerary_data
 
 # ✅ API to Generate Itinerary
 @method_decorator(csrf_exempt, name='dispatch')  # Disable CSRF for API requests
