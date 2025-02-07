@@ -1,30 +1,18 @@
-import React, { Component } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-} from "react-router-dom";
-import HomePage from "./components/HomePage";
-import LoginPage from "./components/LoginPage";
-import SignupPage from "./components/SingUpPage";
-import Navbar from "./components/Nav-menu";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage"; 
+import LoginPage from "./pages/LoginPage"; 
+import SignupPage from "./pages/SignupPage"; 
+import NavMenu from "./components/NavMenu";
 
-class AppRoutes extends Component {
-    render() {
-      return (
-        <BrowserRouter>
-    <Navbar />
-            <Routes>
-              
-              <Route path="/" element={< HomePage/>} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-            </Routes>
-  
-        </BrowserRouter>
-      );
-    }
-  }
-  
-  export default AppRoutes
+export default function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <NavMenu />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

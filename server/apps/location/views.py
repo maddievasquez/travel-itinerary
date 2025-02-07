@@ -117,7 +117,9 @@ def generate_itinerary_with_activities(user, city, start_date, end_date, locatio
         activities = []
         for loc in day_locations:
             # ✅ Generate activity based on category
-            activity_desc = random.choice(ACTIVITY_TEMPLATES.get(loc.category, ["Visit {name} and explore."])).format(name=loc.name)
+            # Modify how activity descriptions are generated using templates
+            activity_desc = random.choice(ACTIVITY_TEMPLATES.get(loc.category, ["Explore {name}"])).format(name=loc.name)
+
 
             activity = Activity.objects.create(
                 itinerary=itinerary,
