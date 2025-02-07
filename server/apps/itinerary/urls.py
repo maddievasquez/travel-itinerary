@@ -1,13 +1,11 @@
-# itinerary/urls.py
-from django.urls import path
-from .views import ItineraryListView
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ItineraryViewSet
+from .views import ItineraryViewSet, itinerary_activities
 
-urlpatterns = [
-    path('', ItineraryListView.as_view(), name='itinerary-list'),
-]
 router = DefaultRouter()
 router.register(r'itineraries', ItineraryViewSet, basename='itinerary')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+    path('<int:pk>/activities/', itinerary_activities, name='itinerary-activities'),
+]
