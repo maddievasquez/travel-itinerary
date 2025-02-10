@@ -145,11 +145,12 @@ def generate_itinerary_with_activities(user, city, start_date, end_date, locatio
 
 
 # ✅ API to Generate Itinerary
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # Requires authentication
 def generate_itinerary_api(request):
     """Handles POST request to create an itinerary with activities."""
-
+    print(request.user)
     city = request.data.get("city")
     start_date = request.data.get("start_date")
     end_date = request.data.get("end_date")

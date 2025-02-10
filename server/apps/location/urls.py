@@ -7,7 +7,7 @@ from .views import generate_itinerary_api, get_itinerary_details
 
 
 urlpatterns = [
-    path('generate-itinerary/', generate_itinerary_api, name='generate-itinerary'),
+     path("generate-itinerary/", generate_itinerary_api, name="generate-itinerary"),
     path('itinerary/<int:itinerary_id>/', get_itinerary_details, name='itinerary-details'),
     #  path('locations/', LocationListView.as_view(), name='location-list'),
     # path('locations/<str:city_name>/', LocationsByCityView.as_view(), name='locations-by-city'),

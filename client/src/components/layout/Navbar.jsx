@@ -1,53 +1,52 @@
-"use client";
-
 import { useState } from "react";
-import { Menu, Home, LayoutDashboard, Calendar } from "lucide-react";
-import Button from "../ui/button";
-import Sheet from "../ui/sheet";
-import { SheetTrigger, SheetContent } from "../ui/sheet";
+import { Menu, Home, Calendar, Grid } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const navItems = [
-  { name: "Home", view: "home", icon: Home },
-  { name: "Itinerary", view: "itinerary", icon: Calendar },
-  { name: "Dashboard", view: "dashboard", icon: LayoutDashboard },
-];
-
-export default function Navbar({ onNavigate, currentView }) {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="p-0 text-white">
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[250px] sm:w-[300px]">
-        <nav className="flex flex-col space-y-4 mt-8">
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href="#"
-              className={`text-lg font-medium transition-colors flex items-center ${
-                currentView === item.view
-                  ? "text-blue-600 font-bold"
-                  : "text-gray-700 hover:text-blue-600"
-              }`}
-              onClick={() => {
-                onNavigate(item.view);
-                setIsOpen(false);
-              }}
-            >
-              <item.icon className="mr-2 h-5 w-5" />
-              {item.name}
-              {currentView === item.view && (
-                <span className="ml-2 text-blue-600">•</span>
-              )}
-            </a>
-          ))}
-        </nav>
-      </SheetContent>
-    </Sheet>
+    <nav className="bg-white shadow-md p-4 fixed w-full top-0 z-50">
+      <div className="flex justify-between items-center max-w-6xl mx-auto">
+        {/* Logo / Brand */}
+        <h1 className="text-2xl font-bold text-gray-800">TripPlanner</h1>
+
+        {/* Mobile Menu Toggle */}
+        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 rounded-lg hover:bg-gray-200 transition">
+          <Menu size={24} />
+        </button>
+
+        {/* Desktop Navigation */}
+        <ul className="hidden md:flex space-x-6">
+          <NavItem to="/" icon={<Home size={20} />} label="Home" />
+          <NavItem to="/itinerary" icon={<Calendar size={20} />} label="Itinerary" />
+          <NavItem to="/dashboard" icon={<Grid size={20} />} label="Dashboard" />
+        </ul>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {isOpen && (
+        <div className="absolute right-4 top-14 bg-white shadow-lg rounded-lg p-4 space-y-3 w-48 md:hidden transition-all">
+          <NavItem to="/" icon={<Home size={18} />} label="Home" onClick={() => setIsOpen(false)} />
+          <NavItem to="/itinerary" icon={<Calendar size={18} />} label="Itinerary" onClick={() => setIsOpen(false)} />
+          <NavItem to="/dashboard" icon={<Grid size={18} />} label="Dashboard" onClick={() => setIsOpen(false)} />
+        </div>
+      )}
+    </nav>
+  );
+}
+
+function NavItem({ to, icon, label, onClick }) {
+  return (
+    <li>
+      <Link
+        to={to}
+        onClick={onClick}
+        className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-all"
+      >
+        {icon}
+        <span>{label}</span>
+      </Link>
+    </li>
   );
 }
