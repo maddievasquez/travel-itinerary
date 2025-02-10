@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"; // Import Avatar components
 import { MapPin, Calendar, Mail, Briefcase, Edit2, Check, X } from "lucide-react";
 
-export default function UserProfile({ initialProfile }) {
+export default function UserProfile({ initialProfile = { pastTrips: [] } }) {
   const [profile, setProfile] = useState(initialProfile || { pastTrips: [] });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -116,24 +116,28 @@ export default function UserProfile({ initialProfile }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {profile.pastTrips && profile.pastTrips.map((trip) => (
-              <div key={trip.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                  {trip.destination.slice(0, 2)}
-                </div>
-                <div className="flex-grow">
-                  <h3 className="font-semibold text-lg">{trip.name}</h3>
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span>{trip.destination}</span>
+            {profile.pastTrips.length > 0 ? (
+              profile.pastTrips.map((trip) => (
+                <div key={trip.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    {trip.destination.slice(0, 2)}
                   </div>
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>{trip.date}</span>
+                  <div className="flex-grow">
+                    <h3 className="font-semibold text-lg">{trip.name}</h3>
+                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      <span>{trip.destination}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      <span>{trip.date}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>No past trips available.</p>
+            )}
           </div>
         </CardContent>
       </Card>

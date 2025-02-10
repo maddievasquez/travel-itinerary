@@ -8,14 +8,16 @@ export default function ItineraryPage() {
   const [selectedItinerary, setSelectedItinerary] = useState(null);
   const { itinerary, loading, error } = useItinerary("Paris", "2024-06-01", "2024-06-05");
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <div className="spinner">Loading...</div>;
+  if (error) return <div className="error-message">Error: {error.message}</div>;
+  
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{itinerary.itinerary.title}</h1>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 sm:grid-cols-1">
+
         {/* Left Panel - Itinerary List & Activities */}
         <div>
           <ItineraryList itineraries={[itinerary.itinerary]} selectItinerary={setSelectedItinerary} />
@@ -27,7 +29,8 @@ export default function ItineraryPage() {
 
         {/* Right Panel - Map */}
         <div>
-          <MapComponent locations={itinerary.days.flatMap(day => day.locations)} />
+        <MapComponent locations={itinerary.days.flatMap(day => day.locations)} aria-label="Map of itinerary locations" />
+
         </div>
       </div>
     </div>

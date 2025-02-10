@@ -1,26 +1,28 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, Link } from "react-router-dom";
+"use client"
 
-function SignupPage() {
-  const [message, setMessage] = useState("");
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { useNavigate, Link } from "react-router-dom"
+
+export default function SignupPage() {
+  const [message, setMessage] = useState("")
   const {
     register,
     handleSubmit,
-    formState: { errors }, // Destructure errors from formState
-  } = useForm();
+    formState: { errors },
+  } = useForm()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const onSubmit = async (signupData) => {
-    setMessage(""); // Reset the message
+    setMessage("")
 
     if (signupData.password !== signupData.confirmPassword) {
-      setMessage("Passwords do not match.");
-      return;
+      setMessage("Passwords do not match.")
+      return
     }
 
-    const url = "http://127.0.0.1:8000/api/users/signup/";
+    const url = "http://127.0.0.1:8000/api/users/signup/"
 
     try {
       const response = await fetch(url, {
@@ -31,108 +33,100 @@ function SignupPage() {
           password: signupData.password,
           passwordTwo: signupData.confirmPassword,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (response.ok) {
-        navigate("/", { replace: true }); // Navigate to home page
+        navigate("/", { replace: true })
       } else if (response.status === 400) {
-        // Display specific error messages from the backend
         if (data.email) {
-          setMessage(data.email[0]); // Display email-specific error
+          setMessage(data.email[0])
         } else if (data.password) {
-          setMessage(data.password[0]); // Handle password errors
+          setMessage(data.password[0])
         } else {
-          setMessage("Signup failed. Please try again.");
+          setMessage("Signup failed. Please try again.")
         }
       } else {
-        setMessage("An unexpected error occurred. Please try again."); 
+        setMessage("An unexpected error occurred. Please try again.")
       }
     } catch (error) {
-      console.error("Error:", error);
-      setMessage("An user with this email already exists."); // Handle generic errors
+      console.error("Error:", error)
+      setMessage("An user with this email already exists.")
     }
-  };
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            Create an account
-          </h1>
-          <span className="text-red-500">{message}</span>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                {...register("email", { required: true })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              {errors.email && <span className="text-red-500">Email is required</span>}
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#51d3e1] via-blue-200 to-blue-400 animate-gradient-x">
+      <div className="max-w-md w-full space-y-8 bg-white bg-opacity-10 backdrop-blur-lg p-10 rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-opacity-18 border-white relative overflow-hidden">
+        <div className="relative">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-600">Create your account</h2>
+          {message && (
+            <div className="mt-2 p-2 bg-red-100 bg-opacity-80 text-red-700 rounded-md text-sm">{message}</div>
+          )}
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  {...register("email", { required: true })}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#70DBFF] focus:border-[#70DBFF] focus:z-10 sm:text-sm"
+                  placeholder="Email address"
+                />
+                {errors.email && <p className="mt-1 text-xs text-red-200">Email is required</p>}
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  {...register("password", { required: true })}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#70DBFF] focus:border-[#70DBFF] focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                />
+                {errors.password && <p className="mt-1 text-xs text-red-200">Password is required</p>}
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className="sr-only">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  {...register("confirmPassword", { required: true })}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#70DBFF] focus:border-[#70DBFF] focus:z-10 sm:text-sm"
+                  placeholder="Confirm Password"
+                />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-xs text-red-200">Confirmation password is required</p>
+                )}
+              </div>
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#70DBFF] transition-all duration-200 hover:shadow-lg"
               >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                {...register("password", { required: true })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              {errors.password && <span className="text-red-500">Password is required</span>}
+                Sign up
+              </button>
             </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                {...register("confirmPassword", { required: true })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              {errors.confirmPassword && (
-                <span className="text-red-500">Confirmation password is required</span>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-            >
-              Sign up
-            </button>
-            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-              Already have an account?{" "}
-              <Link to="/login">
-                <span className="font-medium text-black hover:underline dark:text-primary-500">
-                  Log in here
-                </span>
-              </Link>
-            </p>
           </form>
+          <p className="mt-2 text-center text-sm text-white">
+            Already have an account?{" "}
+            <Link to="/login" className="font-medium text-white hover:text-[#70DBFF] transition-colors duration-200">
+              Log in here
+            </Link>
+          </p>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default SignupPage;

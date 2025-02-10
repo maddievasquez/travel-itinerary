@@ -1,14 +1,16 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar"; // Ensure correct path
+import Navbar from "./Navbar";
+import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Layout() {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow">
-        <Outlet /> {/* This will render the current page */}
+    <div>
+      <Navbar onNavigate={navigate} />
+      <main className="p-4">
+        <Outlet />
       </main>
     </div>
   );
 }
+// Compare this snippet from client/src/pages/HomePage.jsx: 
