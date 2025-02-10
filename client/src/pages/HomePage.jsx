@@ -1,9 +1,9 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../components/ui/card";
 import { Globe, MapPin, Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Button from "../components/ui/button";
 import { format } from "date-fns"
 
-export function Home({ itineraries, setCurrentView, setCurrentItinerary }) {
+export default function HomePage({ itineraries, setCurrentView, setCurrentItinerary }) {
   return (
     <div className="space-y-8">
       <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg p-12 mb-8">

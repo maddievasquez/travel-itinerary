@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import Cookie from "../components/cookies";
 import { useNavigate, Link } from "react-router-dom";
 
-function LoginPage() {
+export default function LoginPage() {
     const [message, setMessage] = useState("");
     const {
       register,
@@ -109,4 +109,3 @@ function LoginPage() {
     )
   }
   
-  export default LoginPage

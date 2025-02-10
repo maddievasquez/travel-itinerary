@@ -1,20 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Menu, Home, LayoutDashboard, Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Button from '@/components/ui/button';
-import Sheet from '@/components/ui/sheet';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useState } from "react";
+import { Menu, Home, LayoutDashboard, Calendar } from "lucide-react";
+import { Button } from "../ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 
 const navItems = [
   { name: "Home", view: "home", icon: Home },
   { name: "Itinerary", view: "itinerary", icon: Calendar },
   { name: "Dashboard", view: "dashboard", icon: LayoutDashboard },
-]
+];
 
-export function NavMenu({ onNavigate, currentView }) {
-  const [isOpen, setIsOpen] = useState(false)
+export default function Navbar({ onNavigate, currentView }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -31,22 +29,24 @@ export function NavMenu({ onNavigate, currentView }) {
               key={item.name}
               href="#"
               className={`text-lg font-medium transition-colors flex items-center ${
-                currentView === item.view ? "text-blue-600 font-bold" : "text-gray-700 hover:text-blue-600"
+                currentView === item.view
+                  ? "text-blue-600 font-bold"
+                  : "text-gray-700 hover:text-blue-600"
               }`}
               onClick={() => {
-                onNavigate(item.view)
-                setIsOpen(false)
+                onNavigate(item.view);
+                setIsOpen(false);
               }}
             >
               <item.icon className="mr-2 h-5 w-5" />
               {item.name}
-              {currentView === item.view && <span className="ml-2 text-blue-600">•</span>}
+              {currentView === item.view && (
+                <span className="ml-2 text-blue-600">•</span>
+              )}
             </a>
           ))}
         </nav>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
-
-

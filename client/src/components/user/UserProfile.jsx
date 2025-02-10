@@ -1,15 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Button from "../ui/button";
+import Label from "../ui/label";
+import Textarea from "../ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../ui/card";
 import { MapPin, Calendar, Mail, Briefcase, Edit2, Check, X } from "lucide-react"
 
-export function UserProfile({ initialProfile }) {
+export default function UserProfile({ initialProfile }) {
   const [profile, setProfile] = useState(initialProfile)
   const [isEditing, setIsEditing] = useState(false)
 

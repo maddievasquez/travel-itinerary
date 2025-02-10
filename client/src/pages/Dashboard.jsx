@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../components/ui/card";
+import ScrollArea from "../components/ui/scroll-area";
 
 const containerStyle = {
   width: "100%",
@@ -15,7 +15,7 @@ const center = {
   lng: 0,
 }
 
-export function Dashboard({ itineraries }) {
+export default function({ itineraries }) {
   const [selectedItinerary, setSelectedItinerary] = useState(null)
 
   const { isLoaded } = useJsApiLoader({
@@ -38,7 +38,7 @@ export function Dashboard({ itineraries }) {
         acc[item.day].push(item)
         return acc
       },
-      {} as Record<number, []>,
+      {},
     )
 
     return Object.entries(groupedByDay)
