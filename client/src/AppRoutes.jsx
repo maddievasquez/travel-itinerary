@@ -5,20 +5,22 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SingUpPage";
 import Dashboard from "./pages/Dashboard";
 import UserProfile from "./components/user/UserProfile";
-import Navbar from "./components/layout/Navbar";  // ⬅ Ensure this is the correct path
-
-
+import Layout from "./components/layout/layout"; // Import Layout
 
 function AppRoutes() {
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        {/* Wrap main pages inside Layout */}
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
+        </Route>
+
+        {/* Pages that DON'T need Navbar */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </BrowserRouter>
   );

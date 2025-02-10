@@ -1,27 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import Button from "../ui/button";
 import Label from "../ui/label";
 import Textarea from "../ui/textarea";
+import Input from "../ui/input"; // Import Input component
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../ui/card";
-import { MapPin, Calendar, Mail, Briefcase, Edit2, Check, X } from "lucide-react"
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"; // Import Avatar components
+import { MapPin, Calendar, Mail, Briefcase, Edit2, Check, X } from "lucide-react";
 
 export default function UserProfile({ initialProfile }) {
-  const [profile, setProfile] = useState(initialProfile)
-  const [isEditing, setIsEditing] = useState(false)
+  const [profile, setProfile] = useState(initialProfile || { pastTrips: [] });
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setProfile((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // Here you would typically send the updated profile to your backend
-    console.log("Updated profile:", profile)
-    setIsEditing(false)
-  }
+    console.log("Updated profile:", profile);
+    setIsEditing(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -114,7 +116,7 @@ export default function UserProfile({ initialProfile }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {profile.pastTrips.map((trip) => (
+            {profile.pastTrips && profile.pastTrips.map((trip) => (
               <div key={trip.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                 <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                   {trip.destination.slice(0, 2)}
@@ -136,6 +138,5 @@ export default function UserProfile({ initialProfile }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

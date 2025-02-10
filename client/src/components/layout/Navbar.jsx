@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Menu, Home, LayoutDashboard, Calendar } from "lucide-react";
-import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import Button from "../ui/button";
+import Sheet from "../ui/sheet";
+import { SheetTrigger, SheetContent } from "../ui/sheet";
 
 const navItems = [
   { name: "Home", view: "home", icon: Home },
