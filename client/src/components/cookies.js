@@ -1,6 +1,7 @@
 const setCookie = (cookieName, cookieValue, expairydays = 30) => {
     const today = new Date();
     today.setTime(today.getTime() + expairydays * 24 * 60 * 60 * 1000);
+    console.log('setting  cookie');
     let expires = "expires=" + today.toUTCString();
     document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
   };

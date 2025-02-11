@@ -3,12 +3,13 @@
 from django.urls import path
 # from .views import GenerateItinerary, generate_itinerary
 # from .views import GenerateItinerary, generate_itinerary
-from .views import generate_itinerary_api, get_itinerary_details
+from .views import GenerateItineraryAPIView, ItineraryDetailAPIView
+# generate_itinerary_api, get_itinerary_details
 
 
 urlpatterns = [
-     path("generate-itinerary/", generate_itinerary_api, name="generate-itinerary"),
-    path('itinerary/<int:itinerary_id>/', get_itinerary_details, name='itinerary-details'),
+     path("generate-itinerary/", GenerateItineraryAPIView.as_view(), name="generate-itinerary"),
+    path("itinerary/<int:itinerary_id>/", ItineraryDetailAPIView.as_view(), name="itinerary-detail"),
     #  path('locations/', LocationListView.as_view(), name='location-list'),
     # path('locations/<str:city_name>/', LocationsByCityView.as_view(), name='locations-by-city'),
     # path('options/', get_options_by_city, name='get-options-by-city'),
