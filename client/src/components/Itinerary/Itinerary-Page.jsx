@@ -1,41 +1,47 @@
-import React, { useState } from "react";
-import { useItinerary } from "../hooks/useItinerary";
-import ItineraryList from "../components/Itinerary/ItineraryList";
-import ItineraryCard from "../components/Itinerary/ItineraryCard";
-import MapComponent from "../components/Map/MapComponent";
+import React, { useState, useEffect } from "react";
+import { useItinerary } from "hooks/useItinerary";
+import ItineraryList from "components/itinerary/ItineraryList";
+import ItineraryCard from "components/itinerary/ItineraryCard";
+import MapComponent from "components/Map/MapComponent";
 
 export default function ItineraryPage() {
   const [selectedItinerary, setSelectedItinerary] = useState(null);
-  const { itinerary, loading, error } = useItinerary("Paris", "2024-06-01", "2024-06-05");
+  const { itinerary, loading, error, createItinerary } = useItinerary();
+
+  // ✅ Fetch itinerary when selectedItinerary changes
+  useEffect(() => {
+    if (!itinerary) {
+      createItinerary("Paris", "2024-06-01", "2024-06-05");
+    }
+  }, [selectedItinerary]);  // Re-fetch when selection changes
 
   if (loading) return <div className="spinner">Loading...</div>;
   if (error) return <div className="error-message">Error: {error.message}</div>;
-  
+  if (!itinerary) return <div className="text-gray-500">No itinerary available.</div>;
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{itinerary.itinerary.title}</h1>
+      <h1 className="text-2xl font-bold mb-4">{itinerary?.itinerary?.title || "Your Itinerary"}</h1>
 
       <div className="grid md:grid-cols-2 gap-6 sm:grid-cols-1">
 
         {/* Left Panel - Itinerary List & Activities */}
         <div>
           <ItineraryList itineraries={[itinerary.itinerary]} selectItinerary={setSelectedItinerary} />
-          {selectedItinerary &&
-            itinerary.days.map((dayData, index) => (
-              <ItineraryCard key={index} day={dayData.day} locations={dayData.locations} activities={dayData.activities} />
-            ))}
+          {selectedItinerary && itinerary?.days?.map((dayData, index) => (
+            <ItineraryCard key={index} day={dayData.day} locations={dayData.locations} activities={dayData.activities} />
+          ))}
         </div>
 
         {/* Right Panel - Map */}
         <div>
-        <MapComponent locations={itinerary.days.flatMap(day => day.locations)} aria-label="Map of itinerary locations" />
-
+        <MapComponent locations={itinerary?.days?.flatMap(day => day.locations) || []} aria-label="Map of itinerary locations" />
         </div>
       </div>
     </div>
   );
 }
+
 
 // "use client";
 // import { useState } from "react";

@@ -9,19 +9,19 @@
   - [ ] 
   - [x] Footer
   - [ ] Sidebar/Navigation
-  - [ ] Itinerary card
-  - [ ] User profile components
-- [ ] Implement user authentication UI:
+  - [x] Itinerary card
+  - [x] User profile components
+- [x] Implement user authentication UI:
   - [x] Sign-up form
-  - [ ] Login form
+  - [x] Login form
   - [ ] Google OAuth integration
 - [ ] Create main pages:
   - [x] Home page
-  - [ ] Itinerary builder page
-  - [ ] User dashboard
+  - [x] Itinerary builder page
+  - [x] User dashboard
   - [ ] Activity search and filter page
-- [ ] Integrate front-end with API endpoints.
-- [ ] Implement client-side validation for forms.
+- [x] Integrate front-end with API endpoints.
+- [x] Implement client-side validation for forms.
 - [ ] Add responsive design and mobile support.
 
 ## Back-End Tasks
@@ -39,18 +39,18 @@
   - [ ] User authentication (sign-up, login, logout, Google OAuth)
   - [x] CRUD operations for itineraries [todo: test it]
   - [x] Search and filter for activities [todo: test it]
-- [ ] Develop View for API each endpoint
-- [ ] Develop Serializer for API each endpoint
-- [ ] Set up database migrations and seed initial data.
+- [x] Develop View for API each endpoint
+- [x] Develop Serializer for API each endpoint
+- [x] Set up database migrations and seed initial data.
 - [x] Configure environment variables for sensitive information (e.g., database credentials, API keys).
-- [ ] Add security measures (e.g., input validation, CSRF protection).
+- [x] Add security measures (e.g., input validation, CSRF protection).
 
 ## Integration Tasks
 
 - [x] Test API endpoints with Postman/Insomnia. 
-- [ ] Connect React front-end to Django back-end.
-- [ ] Implement state management in React (e.g., Redux or Context API).
-- [ ] Test front-end and back-end communication.
+- [x] Connect React front-end to Django back-end.
+- [x] Implement state management in React (e.g., Redux or Context API).
+- [x] Test front-end and back-end communication.
 
 ## Deployment Tasks
 
