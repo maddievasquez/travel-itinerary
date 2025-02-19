@@ -6,7 +6,6 @@
 - [x] Install and configure Tailwind CSS for styling.
 - [ ] Create reusable UI components:
   - [x] Header
-  - [ ] 
   - [x] Footer
   - [ ] Sidebar/Navigation
   - [x] Itinerary card
@@ -47,7 +46,7 @@
 
 ## Integration Tasks
 
-- [x] Test API endpoints with Postman/Insomnia. 
+- [x] Test API endpoints with Postman/Insomnia.
 - [x] Connect React front-end to Django back-end.
 - [x] Implement state management in React (e.g., Redux or Context API).
 - [x] Test front-end and back-end communication.
