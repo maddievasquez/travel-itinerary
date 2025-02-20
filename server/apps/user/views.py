@@ -74,3 +74,11 @@ class AdminOnlyView(APIView):
     def get(self, request):
         return Response({"message": "You are an admin!"})
 
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Retrieve the profile of the logged-in user."""
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
