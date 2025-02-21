@@ -88,6 +88,29 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+from dotenv import load_dotenv
+load_dotenv()
+
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# Use the API key with OpenAI's API client
+
+# openai.api_key = openai_api_key
+
+# # Example usage
+# response = openai.Completion.create(
+#     model="gpt-3.5-turbo",  # Updated model
+#     prompt="Hello, how are you?",
+#     max_tokens=50
+# )
+
+
+# print(response.choices[0].text.strip())
+
 
 import environ
 

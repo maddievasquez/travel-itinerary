@@ -27,15 +27,11 @@ export default function ItineraryPage() {
             <CardTitle>Itinerary for {itinerary.city}</CardTitle>
           </CardHeader>
           <CardContent>
-            {itinerary.days.map((day) => (
-              <div key={day.day} className="mb-4">
-                <h4 className="font-semibold">Day {day.day}</h4>
-                {day.activities.map((activity, index) => (
-                  <p key={index} className="ml-4">{activity.description}</p>
-                ))}
-              </div>
-            ))}
-          </CardContent>
+  {itinerary.days.map((day) => (
+    <ItineraryCard key={day.day} day={day.day} locations={day.locations} activities={day.activities} />
+  ))}
+</CardContent>
+
         </Card>
       </div>
 
@@ -46,9 +42,15 @@ export default function ItineraryPage() {
             <CardTitle>Map View</CardTitle>
           </CardHeader>
           <CardContent>
-            <MapComponent
-              locations={itinerary.days.flatMap((day) => day.locations)}
-            />
+          <MapComponent
+  locations={itinerary.days.flatMap((day) =>
+    day.locations.map((loc) => ({
+      lat: parseFloat(loc.latitude),
+      lng: parseFloat(loc.longitude),
+      name: loc.name,
+    }))
+  )}
+/>
           </CardContent>
         </Card>
       </div>

@@ -1,52 +1,77 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Button from "../ui/button";
-import Label from "../ui/label";
-import Textarea from "../ui/textarea";
-import Input from "../ui/input"; // Import Input component
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"; // Import Avatar components
-import { MapPin, Calendar, Mail, Briefcase, Edit2, Check, X } from "lucide-react";
+import Input from "../ui/input"; 
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"; 
+import { Mail, Edit2, Check, X } from "lucide-react";
 
-export default function UserProfile({ initialProfile = { pastTrips: [] } }) {
-  const [profile, setProfile] = useState(initialProfile || { pastTrips: [] });
+export default function UserProfile() {
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    avatar: "",
+  });
+
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  // Fetch User Profile from API
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const response = await axios.get("/api/user/profile"); // Replace with actual API route
+        setProfile(response.data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    }
+    fetchProfile();
+  }, []);
+
+  // Handle form field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // Handle profile update submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the updated profile to your backend
-    console.log("Updated profile:", profile);
-    setIsEditing(false);
+    setLoading(true);
+    try {
+      await axios.put("/api/user/profile", profile); // Replace with actual API route
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+    setLoading(false);
   };
 
   return (
     <div className="space-y-6">
+      {/* Profile Card */}
       <Card className="overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600"></div>
         <CardHeader className="relative pb-0">
           <div className="absolute -top-16 left-4 border-4 border-white rounded-full">
             <Avatar className="w-32 h-32">
-              <AvatarImage src={profile.avatar} alt={profile.name} />
+              <AvatarImage src={profile.avatar} alt={profile.name || profile.email} />
               <AvatarFallback>
-                {profile.name
+                {(profile.name || profile.email)
                   .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                  .map((part) => part[0])
+                  .join("")
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="flex justify-end pt-4">
             {isEditing ? (
               <div className="space-x-2">
-                <Button size="sm" onClick={handleSubmit}>
+                <Button size="sm" onClick={handleSubmit} disabled={loading}>
                   <Check className="w-4 h-4 mr-2" />
-                  Save
+                  {loading ? "Saving..." : "Save"}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
                   <X className="w-4 h-4 mr-2" />
@@ -70,75 +95,19 @@ export default function UserProfile({ initialProfile = { pastTrips: [] } }) {
                   name="name"
                   value={profile.name}
                   onChange={handleInputChange}
+                  placeholder="Enter your name"
                   className="text-2xl font-bold"
                 />
               ) : (
-                <h2 className="text-2xl font-bold">{profile.name}</h2>
+                <h2 className="text-2xl font-bold">{profile.name || "No name provided"}</h2>
               )}
+
               <div className="flex items-center text-sm text-gray-500">
                 <Mail className="w-4 h-4 mr-2" />
-                {isEditing ? (
-                  <Input id="email" name="email" type="email" value={profile.email} onChange={handleInputChange} />
-                ) : (
-                  profile.email
-                )}
+                {profile.email}
               </div>
-              <div className="flex items-center text-sm text-gray-500">
-                <Briefcase className="w-4 h-4 mr-2" />
-                {isEditing ? (
-                  <Input id="occupation" name="occupation" value={profile.occupation} onChange={handleInputChange} />
-                ) : (
-                  profile.occupation
-                )}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              {isEditing ? (
-                <Textarea
-                  id="bio"
-                  name="bio"
-                  value={profile.bio}
-                  onChange={handleInputChange}
-                  className="min-h-[100px]"
-                />
-              ) : (
-                <p className="text-gray-700">{profile.bio}</p>
-              )}
             </div>
           </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Past Trips</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {profile.pastTrips.length > 0 ? (
-              profile.pastTrips.map((trip) => (
-                <div key={trip.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                    {trip.destination.slice(0, 2)}
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-lg">{trip.name}</h3>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span>{trip.destination}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      <span>{trip.date}</span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>No past trips available.</p>
-            )}
-          </div>
         </CardContent>
       </Card>
     </div>

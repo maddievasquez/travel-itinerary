@@ -11,22 +11,12 @@ export default function useItineraryMap(itineraryId) {
     const fetchLocations = async () => {
       try {
         setLoading(true);
-        setError(null);
-
         const response = await fetch(`/api/itineraries/${itineraryId}/`);
-        if (!response.ok) throw new Error("Failed to fetch locations");
-
+        if (!response.ok) throw new Error("Itinerary not found");
         const data = await response.json();
-
-        if (data.days) {
-          const extractedLocations = data.days.flatMap((day) => day.locations);
-          setLocations(extractedLocations);
-        } else {
-          setLocations([]);
-        }
+        setLocations(data.days.flatMap((day) => day.locations));
       } catch (err) {
         setError(err.message);
-        setLocations([]);
       } finally {
         setLoading(false);
       }

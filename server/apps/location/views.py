@@ -1,3 +1,4 @@
+import openai
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -6,6 +7,7 @@ from datetime import datetime, timedelta
 import random
 from math import radians, sin, cos, sqrt, atan2
 
+from server import settings
 from server.apps.activity.activity_templates import ACTIVITY_TEMPLATES
 from server.apps.activity.models import Activity
 from server.apps.itinerary.models import Itinerary
@@ -133,30 +135,38 @@ def generate_itinerary_with_activities(user, city, start_date, end_date, locatio
 # ✅ Class-Based API View: Generate Itinerary
 class GenerateItineraryAPIView(APIView):
     """Handles itinerary generation."""
-    # permission_classes = [IsAuthenticated]  # Requires authentication
 
     def post(self, request):
         user = request.user
-
         city = request.data.get("city")
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
+        is_premium = user.is_premium  # Assuming you have a field to check premium status
 
         if not city or not start_date or not end_date:
             return Response({"error": "City, start_date, and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            itinerary, itinerary_data = generate_itinerary_with_activities(
-                user, city, start_date, end_date, Location.objects.filter(city__iexact=city)
-            )
+            if is_premium:
+                itinerary_text = generate_itinerary_with_chatgpt(city, start_date, end_date)
+                if itinerary_text:
+                    return Response({
+                        "itinerary_text": itinerary_text,
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({"error": "Failed to generate itinerary"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                itinerary, itinerary_data = generate_itinerary_with_activities(
+                    user, city, start_date, end_date, Location.objects.filter(city__iexact=city)
+                )
+                return Response({
+                    "itinerary": ItinerarySerializer(itinerary).data,
+                    "days": itinerary_data
+                }, status=status.HTTP_201_CREATED)
         except Exception as e:
-            print("in exception             ", e)
+            print("Error:", e)
             return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            "itinerary": ItinerarySerializer(itinerary).data,
-            "days": itinerary_data
-        }, status=status.HTTP_201_CREATED)
 
 
 # ✅ Class-Based API View: Get Itinerary Details
@@ -175,7 +185,28 @@ class ItineraryDetailAPIView(APIView):
             "itinerary": ItinerarySerializer(itinerary).data,
             "activities": ActivitySerializer(activities, many=True).data
         })
+# Set your OpenAI API key (secure it in settings)
+openai.api_key = settings.OPENAI_API_KEY
 
+# Function to generate itinerary using ChatGPT
+def generate_itinerary_with_chatgpt(city, start_date, end_date):
+    # Construct prompt for ChatGPT
+    prompt = f"Create a detailed itinerary for a trip to {city} from {start_date} to {end_date}. Include recommended activities, their time slots, and estimated costs for each activity. Provide a structured format for each day of the trip."
+
+    try:
+        # Call OpenAI's ChatGPT API
+        response = openai.Completion.create(
+            model="text-davinci-003",  # Or the latest available model
+            prompt=prompt,
+            max_tokens=1500,  # Adjust based on how detailed you want the response
+            temperature=0.7,  # Control randomness
+        )
+        # Extract the generated text from the response
+        itinerary_text = response.choices[0].text.strip()
+        return itinerary_text
+    except Exception as e:
+        print(f"Error with OpenAI API: {e}")
+        return None
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
 # from django.http import JsonResponse

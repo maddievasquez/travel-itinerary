@@ -13,7 +13,7 @@ export function useItinerary() {
         headers: { "Content-Type": "application/json",
           "Authorization": "Bearer " + Cookie.getCookie('access'),
          },
-        //credentials: "include",  // 👈 Sends cookies with the request (for session authentication)
+        //credentials: "include",  //  Sends cookies with the request (for session authentication)
         body: JSON.stringify({ city, start_date: startDate, end_date: endDate }),
       });
       

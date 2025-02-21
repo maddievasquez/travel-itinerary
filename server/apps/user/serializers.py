@@ -64,3 +64,17 @@ class SignupSerializer(serializers.ModelSerializer):
             return user
         except IntegrityError:  # Catch duplicate email errors
             raise ValidationError({"email": "A user with this email already exists."})
+
+# Profile Update Serializer - Focus on minimal fields: name, email, and avatar
+class UserProfileSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(allow_null=True, required=False)
+    
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'avatar']  # Only name, email, and avatar
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
