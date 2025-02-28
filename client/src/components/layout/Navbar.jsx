@@ -1,11 +1,11 @@
 "use client"
-
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { Menu, Home, Calendar, LogOut, Settings, User } from "lucide-react"
+import { Menu, Home, LogOut, Settings, User } from "lucide-react"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const location = useLocation()
 
   return (
     <nav className="bg-white shadow-md fixed w-full top-0 z-50">
@@ -17,7 +17,7 @@ export default function Navbar() {
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <NavItem to="/" icon={<Home className="w-4 h-4" />} label="Home" />
-              <NavItem to="/itinerary" icon={<Calendar className="w-4 h-4" />} label="Itinerary" />
+              <NavItem to="/my-itineraries" icon={<Home className="w-4 h-4" />} label="My Itineraries" />
             </div>
           </div>
 
@@ -127,9 +127,9 @@ function MobileMenu({ setIsOpen }) {
       <div className="pt-2 pb-3 space-y-1">
         <MobileNavItem to="/" icon={<Home className="w-4 h-4" />} label="Home" setIsOpen={setIsOpen} />
         <MobileNavItem
-          to="/itinerary"
-          icon={<Calendar className="w-4 h-4" />}
-          label="Itinerary"
+          to="/my-itineraries"
+          icon={<Home className="w-4 h-4" />}
+          label="My Itineraries"
           setIsOpen={setIsOpen}
         />
       </div>
@@ -211,4 +211,3 @@ function MobileMenuItem({ to, icon, label, onClick, className = "", setIsOpen })
     </Link>
   )
 }
-

@@ -8,9 +8,16 @@ export default function GoogleMapComponent({ locations }) {
   if (!isLoaded) return <p>Loading map...</p>;
 
   return (
-    <GoogleMap center={locations[0]} zoom={12} mapContainerStyle={{ width: "100%", height: "400px" }}>
+    <GoogleMap
+      center={{
+        lat: locations[0]?.latitude || 48.8566, // Default: Paris
+        lng: locations[0]?.longitude || 2.3522,
+      }}
+      zoom={12}
+      mapContainerStyle={{ width: "100%", height: "400px" }}
+    >
       {locations.map((loc, index) => (
-        <Marker key={index} position={{ lat: loc.latitude, lng: loc.longitude }} />
+        <Marker key={index} position={{ lat: Number(loc.latitude), lng: Number(loc.longitude) }} />
       ))}
     </GoogleMap>
   );

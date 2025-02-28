@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import ItineraryCard from "./ItineraryCard";
@@ -8,7 +8,7 @@ import MapComponent from "../Map/MapComponent";
 export default function ItineraryPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const itinerary = location.state?.itinerary;
+  const [itinerary, setItinerary] = useState(location.state?.itinerary || null);
 
   useEffect(() => {
     if (!itinerary) {
@@ -16,48 +16,46 @@ export default function ItineraryPage() {
     }
   }, [itinerary, navigate]);
 
-  if (!itinerary) return <p>Loading...</p>;
+  if (!itinerary) return <p className="text-center text-lg">Loading itinerary...</p>;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)] p-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-150px)] p-6">
       {/* Left Section - Itinerary Activities */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 overflow-y-auto max-h-full p-4 bg-white shadow-md rounded-lg">
         <Card>
           <CardHeader>
-            <CardTitle>Itinerary for {itinerary.city}</CardTitle>
+            <CardTitle className="text-xl font-semibold">Itinerary for {itinerary.city}</CardTitle>
           </CardHeader>
           <CardContent>
-  {itinerary.days.map((day) => (
-    <ItineraryCard key={day.day} day={day.day} locations={day.locations} activities={day.activities} />
-  ))}
-</CardContent>
-
+            {itinerary.days.map((day) => (
+              <ItineraryCard key={day.day} day={day.day} locations={day.locations} activities={day.activities} />
+            ))}
+          </CardContent>
         </Card>
       </div>
 
       {/* Right Section - Map */}
-      <div className="lg:col-span-2">
-        <Card>
+      <div className="lg:col-span-2 flex flex-col">
+        <Card className="flex-grow">
           <CardHeader>
-            <CardTitle>Map View</CardTitle>
+            <CardTitle className="text-xl font-semibold">Map View</CardTitle>
           </CardHeader>
-          <CardContent>
-          <MapComponent
-  locations={itinerary.days.flatMap((day) =>
-    day.locations.map((loc) => ({
-      lat: parseFloat(loc.latitude),
-      lng: parseFloat(loc.longitude),
-      name: loc.name,
-    }))
-  )}
-/>
+          <CardContent className="h-full">
+            <MapComponent
+              locations={itinerary.days.flatMap((day) =>
+                day.locations.map((loc) => ({
+                  lat: Number(loc.latitude) || 0,
+                  lng: Number(loc.longitude) || 0,
+                  name: loc.name,
+                }))
+              )}
+            />
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
 
 
 

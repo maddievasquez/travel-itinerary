@@ -1,17 +1,12 @@
-# user/urls.py
 from django.urls import path
-from .views import UserProfileView, UserView
-from .views import SignUpView,  LoginView, LogoutView
+from .views import UserProfileView, UserView, SignUpView, LoginView, LogoutView, UserSettingsView
 
-
-# Include this in your main urls.py file
-from . import views
 urlpatterns = [
-    path('', views.UserView.as_view(), name='user-list-create'),  # Adjust based on your views
+    path('', UserView.as_view(), name='user-list-create'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
-
-
+    path('settings/', UserSettingsView.as_view(), name='user-settings'),
+    path('settings/update/', UserSettingsView.as_view(), name='update-settings'),
 ]

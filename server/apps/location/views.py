@@ -7,8 +7,9 @@ from datetime import datetime, timedelta
 import random
 from math import radians, sin, cos, sqrt, atan2
 
+
 from server import settings
-from server.apps.activity.activity_templates import ACTIVITY_TEMPLATES
+from server.apps.activity.activity_templates import ACTIVITY_TEMPLATES  # Import templates
 from server.apps.activity.models import Activity
 from server.apps.itinerary.models import Itinerary
 from server.apps.location.models import Location  # Assuming Location is in a separate app
@@ -64,8 +65,12 @@ def generate_itinerary(locations, num_days):
 
 
 # ✅ Utility Function: Generate Itinerary with Activities
+
+
+
+
 def generate_itinerary_with_activities(user, city, start_date, end_date, locations):
-    """Creates an itinerary and auto-populates activities."""
+    """Creates an itinerary and assigns activities using predefined templates."""
     start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
@@ -108,16 +113,20 @@ def generate_itinerary_with_activities(user, city, start_date, end_date, locatio
 
         activities = []
         for loc in day_locations:
-            activity_desc = random.choice(ACTIVITY_TEMPLATES.get(loc.category, ["Explore {name}"])).format(name=loc.name)
+            # ✅ Ensure `loc.category` exists, otherwise use a default category
+            category = loc.category if hasattr(loc, "category") and loc.category in ACTIVITY_TEMPLATES else "general"
+            template_choices = ACTIVITY_TEMPLATES.get(category, ["Explore {name}"])
+            activity_desc = random.choice(template_choices).format(name=loc.name)
+
             activity = Activity.objects.create(
                 itinerary=itinerary,
                 location=loc,
-                description=activity_desc,
+                description=activity_desc,  # ✅ Now correctly formatted
                 date=start_date + timedelta(days=day - 1),
                 start_time="10:00",
                 end_time="18:00",
                 cost=random.randint(10, 50),
-                category=loc.category,
+                category=category,
                 city=city
             )
             activities.append(activity)
@@ -130,6 +139,8 @@ def generate_itinerary_with_activities(user, city, start_date, end_date, locatio
         day += 1
 
     return itinerary, itinerary_data
+
+
 
 
 # ✅ Class-Based API View: Generate Itinerary
@@ -157,8 +168,9 @@ class GenerateItineraryAPIView(APIView):
                     return Response({"error": "Failed to generate itinerary"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 itinerary, itinerary_data = generate_itinerary_with_activities(
-                    user, city, start_date, end_date, Location.objects.filter(city__iexact=city)
-                )
+    user, city, start_date, end_date, Location.objects.filter(city__iexact=city)
+)
+
                 return Response({
                     "itinerary": ItinerarySerializer(itinerary).data,
                     "days": itinerary_data

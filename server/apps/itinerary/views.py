@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Itinerary
 from .serializers import ItinerarySerializer
 from server.apps.activity.serializers import ActivitySerializer
+from rest_framework.views import APIView
 
 class ItineraryViewSet(viewsets.ModelViewSet):
     queryset = Itinerary.objects.all()
@@ -30,3 +31,11 @@ def itinerary_activities(request, pk):
     }
 
     return Response(response_data)
+class UserItinerariesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Return all itineraries for the logged-in user."""
+        itineraries = Itinerary.objects.filter(user=request.user).order_by("-start_date")
+        serializer = ItinerarySerializer(itineraries, many=True)
+        return Response(serializer.data)

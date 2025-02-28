@@ -6,6 +6,7 @@ import SignupPage from "./pages/SingUpPage";
 import Dashboard from "./pages/Dashboard";
 import UserProfile from "./components/user/UserProfile";
 import ItineraryPage from "./components/itinerary/Itinerary-Page";
+import MyItineraries from "./pages/MyItinerariesPage";
 
 export default function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function AppRoutes() {
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/my-itineraries" element={<MyItineraries />} />
       </Routes>
     </BrowserRouter>
   );
