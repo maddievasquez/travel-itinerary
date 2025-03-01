@@ -1,39 +1,34 @@
-// src/components/ui/Accordion.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 
-const AccordionItem = ({ title, children }) => {
+export function Accordion({ children }) {
+  return <div className="space-y-2">{children}</div>;
+}
+
+export function AccordionItem({ title, children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div>
-      <div
-        className="cursor-pointer text-lg font-semibold text-gray-700"
+    <div className="border rounded-lg shadow-sm">
+      <button
+        className="w-full flex justify-between items-center p-3 text-left bg-gray-100 font-semibold hover:bg-gray-200"
         onClick={() => setIsOpen(!isOpen)}
       >
         {title}
-      </div>
-      {isOpen && <div className="mt-2 text-sm">{children}</div>}
+        <span>{isOpen ? "▲" : "▼"}</span>
+      </button>
+      {isOpen && <div className="p-3">{children}</div>}
     </div>
   );
-};
+}
 
-const Accordion = ({ children }) => {
-  return <div>{children}</div>;
-};
-
-const AccordionTrigger = ({ children, onClick }) => {
+export function AccordionTrigger({ title, onClick }) {
   return (
-    <div
-      className="cursor-pointer text-lg font-semibold text-gray-700"
-      onClick={onClick}
-    >
-      {children}
-    </div>
+    <button className="w-full text-left p-2 hover:bg-gray-100 rounded-md transition" onClick={onClick}>
+      {title}
+    </button>
   );
-};
+}
 
-const AccordionContent = ({ children }) => {
-  return <div className="mt-2 text-sm">{children}</div>;
-};
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
+export function AccordionContent({ children }) {
+  return <div className="p-3 border-t">{children}</div>;
+}
