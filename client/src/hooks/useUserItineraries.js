@@ -9,15 +9,20 @@ export default function useUserItineraries() {
   useEffect(() => {
     const fetchItineraries = async () => {
       try {
+        const token = Cookie.getCookie("access") || localStorage.getItem("userToken");
+        if (!token) throw new Error("Unauthorized: No valid token");
+
         const response = await fetch("http://127.0.0.1:8000/api/itineraries/user-itineraries/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + Cookie.getCookie("access"),  // ✅ Uses JWT token for authentication
+            "Authorization": `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) throw new Error("Failed to fetch itineraries");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch itineraries: ${response.statusText}`);
+        }
 
         const data = await response.json();
         setItineraries(data);

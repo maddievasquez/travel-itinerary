@@ -1,16 +1,17 @@
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Layout() {
   const navigate = useNavigate();
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar onNavigate={navigate} />
-      <main className="p-4">
+      <main className="flex-1 p-4">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
-// Compare this snippet from client/src/pages/HomePage.jsx: 

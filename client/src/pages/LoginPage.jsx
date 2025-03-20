@@ -1,84 +1,130 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import Cookie from "../components/cookies"
-import { useNavigate, Link } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import Cookie from "../components/cookies";
+import { useNavigate, Link } from "react-router-dom";
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
-  const [message, setMessage] = useState("")
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onSubmit = async (loginData) => {
-    const formData = new FormData()
+    const formData = new FormData();
     Object.keys(loginData).forEach((key) => {
-      formData.append(key, loginData[key])
-    })
+      formData.append(key, loginData[key]);
+    });
     const options = {
       method: "POST",
       body: formData,
-    }
+    };
 
-    const url = "http://127.0.0.1:8000/api/auth/login/"
+    const url = "http://127.0.0.1:8000/api/auth/login/";
 
     try {
-      const response = await fetch(url, options)
+      const response = await fetch(url, options);
       if (!response.ok) {
-        setMessage("Invalid credentials.")
-        throw new Error("Network response was not ok")
+        setMessage("Invalid credentials.");
+        throw new Error("Network response was not ok");
       }
-      const successLoginData = await response.json()
-
+      const successLoginData = await response.json();
+      // Store token in cookies
       Object.keys(successLoginData).forEach((key) => {
-        Cookie.setCookie(key, successLoginData[key])
-      })
-      navigate("/", { replace: true })
-      window.location.reload()
+        Cookie.setCookie(key, successLoginData[key]);
+      });
+
+      if (document.getElementById("remember").checked) {
+        localStorage.setItem("rememberedUsername", loginData.username);
+      } else {
+        localStorage.removeItem("rememberedUsername");
+      }
+
+      navigate("/", { replace: true });
+      window.location.reload();
     } catch (error) {
-      console.error("Fetch error:", error)
+      console.error("Fetch error:", error);
     }
-  }
+  };
+
+  // Function to handle Google login success
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      // Send the Google credential token to your backend
+      const response = await fetch("http://127.0.0.1:8000/api/auth/google-login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Google authentication failed");
+      }
+
+      const data = await response.json();
+      
+      // Store tokens in cookies
+      Object.keys(data).forEach((key) => {
+        Cookie.setCookie(key, data[key]);
+      });
+
+      // Navigate to home page
+      navigate("/", { replace: true });
+      window.location.reload();
+    } catch (error) {
+      console.error("Google login error:", error);
+      setMessage("Google sign-in failed. Please try again.");
+    }
+  };
+
+  // Function to handle Google login failure
+  const handleGoogleError = () => {
+    setMessage("Google sign-in was canceled or failed. Please try again.");
+  };
+
+  const [username, setUsername] = useState(localStorage.getItem("rememberedUsername") || "");
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#51d3e1] via-blue-200 to-blue-400 animate-gradient-x">
-      <div className="w-full max-w-md space-y-8 bg-white bg-opacity-10 backdrop-blur-lg p-10 rounded-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-opacity-18 border-white relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#2C3E50] via-[#2B8D8D] to-[#1F8A8A] backdrop-blur-sm">
+      <div className="w-full max-w-md space-y-8 bg-[#34495E] bg-opacity-90 backdrop-blur-lg p-10 rounded-2xl shadow-lg border border-white/30 relative overflow-hidden">
         <div className="relative">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">Log in to your account</h2>
+          <h2 className="text-center text-3xl font-bold text-white">Log in to your account</h2>
           {message && (
-            <div className="mt-2 p-2 bg-red-100 bg-opacity-80 text-red-700 rounded-md text-sm">{message}</div>
+            <div className="mt-2 p-2 bg-red-200 text-red-800 rounded-md text-sm">
+              {message}
+            </div>
           )}
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
             <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Your username
-                </label>
-                <input
-                  type="text"
-                  id="email"
-                  {...register("username", { required: true })}
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#70DBFF] focus:border-[#70DBFF] focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  {...register("password", { required: true })}
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#70DBFF] focus:border-[#70DBFF] focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
+              <input
+                type="text"
+                id="email"
+                autoComplete="username"
+                defaultValue={localStorage.getItem("rememberedUsername") || ""}
+                onChange={(e) => setUsername(e.target.value)}
+                {...register("username", { required: true })}
+                className="appearance-none rounded-t-md w-full px-4 py-2 border border-[#2B8D8D] placeholder-[#BDC3C7] text-white bg-[#2C3E50] focus:ring-2 focus:ring-[#FF6F61] focus:border-[#FF6F61] focus:outline-none sm:text-sm"
+                placeholder="Username"
+              />
+
+              <input
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                {...register("password", { required: true })}
+                className="appearance-none rounded-b-md w-full px-4 py-2 border border-[#2B8D8D] placeholder-[#BDC3C7] text-white bg-[#2C3E50] focus:ring-2 focus:ring-[#FF6F61] focus:border-[#FF6F61] focus:outline-none sm:text-sm"
+                placeholder="Password"
+              />
             </div>
 
             <div className="flex items-center justify-between">
@@ -86,60 +132,51 @@ export default function LoginPage() {
                 <input
                   id="remember"
                   type="checkbox"
-                  className="h-4 w-4 text-[#70DBFF] focus:ring-[#70DBFF] border-gray-300 rounded"
+                  className="h-4 w-4 text-[#FF6F61] border border-[#2B8D8D] rounded"
                 />
-                <label htmlFor="remember" className="ml-2 block text-sm text-white">
+                <label htmlFor="remember" className="ml-2 text-sm text-white">
                   Remember me
                 </label>
               </div>
-              <div className="text-sm">
-                <a href="#" className="font-medium text-white hover:text-[#70DBFF]">
-                  Forgot password?
-                </a>
-              </div>
+              <p className="text-sm">
+                <Link to="/forgot-password" className="text-blue-400">Forgot password?</Link>
+              </p>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#70DBFF] transition-all duration-200 hover:shadow-lg"
-              >
-                Sign in
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-[#2B8D8D] to-[#FF6F61] hover:scale-105 transition-all duration-200 shadow-md"
+            >
+              Sign in
+            </button>
           </form>
 
           <p className="mt-2 text-center text-sm text-white">
             Don't have an account yet?{" "}
-            <Link to="/signup" className="font-medium text-white hover:text-[#70DBFF] transition-colors duration-200">
+            <Link to="/signup" className="font-medium text-white hover:text-[#2B8D8D]">
               Click here
             </Link>
           </p>
 
           <div className="mt-6">
-            <button
-              type="button"
-              className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white bg-opacity-80 hover:bg-opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#70DBFF] transition-all duration-200"
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 18 19"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z"
-                  clipRule="evenodd"
+            {/* Replace the button with GoogleOAuthProvider and GoogleLogin */}
+            <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap
+                  theme="filled_blue"
+                  text="signin_with"
+                  shape="rectangular"
+                  logo_alignment="center"
+                  width="100%"
                 />
-              </svg>
-              Sign in with Google
-            </button>
+              </div>
+            </GoogleOAuthProvider>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

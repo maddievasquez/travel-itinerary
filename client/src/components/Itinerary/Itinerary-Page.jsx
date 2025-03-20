@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { format } from "date-fns";
 import ItineraryCard from "./ItineraryCard";
 import MapComponent from "../Map/MapComponent";
 
@@ -9,12 +8,69 @@ export default function ItineraryPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [itinerary, setItinerary] = useState(location.state?.itinerary || null);
-
+  const [mapLocations, setMapLocations] = useState([]);
+  
+  // Log location state for debugging
   useEffect(() => {
-    if (!itinerary) {
-      navigate("/"); // Redirect to Home if no itinerary is found
+    console.log("Location state:", location.state);
+    if (location.state?.itinerary) {
+      setItinerary(location.state.itinerary);
+      localStorage.setItem("itinerary", JSON.stringify(location.state.itinerary));
+    } else {
+      const savedItinerary = localStorage.getItem("itinerary");
+      if (savedItinerary) {
+        try {
+          const parsedItinerary = JSON.parse(savedItinerary);
+          setItinerary(parsedItinerary);
+          console.log("Loaded itinerary from localStorage:", parsedItinerary);
+        } catch (error) {
+          console.error("Error parsing saved itinerary:", error);
+          navigate("/");
+        }
+      } else {
+        console.log("No itinerary found in localStorage, redirecting to home");
+        navigate("/");
+      }
     }
-  }, [itinerary, navigate]);
+  }, [location.state, navigate]);
+  
+  // Process locations for map when itinerary changes
+  useEffect(() => {
+    if (itinerary && itinerary.days && Array.isArray(itinerary.days)) {
+      console.log("Processing itinerary for map locations:", itinerary);
+      
+      try {
+        const locations = itinerary.days.flatMap((day) => {
+          if (!day.locations || !Array.isArray(day.locations)) {
+            console.warn(`Day ${day.day} has no locations array`);
+            return [];
+          }
+          
+          return day.locations.map((loc) => {
+            // Ensure we have valid data
+            const latitude = loc.latitude ? parseFloat(loc.latitude) : null;
+            const longitude = loc.longitude ? parseFloat(loc.longitude) : null;
+            
+            return {
+              latitude: latitude,
+              longitude: longitude,
+              name: loc.name || `Location in Day ${day.day}`,
+              address: loc.address || ''
+            };
+          }).filter(loc => loc.latitude !== null && loc.longitude !== null);
+        });
+        
+        console.log("Processed locations for map:", locations);
+        setMapLocations(locations);
+      } catch (error) {
+        console.error("Error processing locations:", error);
+        setMapLocations([]);
+      }
+    } else {
+      console.warn("Itinerary is missing or has invalid structure");
+      setMapLocations([]);
+    }
+  }, [itinerary]);
 
   if (!itinerary) return <p className="text-center text-lg">Loading itinerary...</p>;
 
@@ -24,16 +80,22 @@ export default function ItineraryPage() {
       <div className="lg:col-span-1 overflow-y-auto max-h-full p-4 bg-white shadow-md rounded-lg">
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Itinerary for {itinerary.city}</CardTitle>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-blue-500 text-transparent bg-clip-text shadow-lg p-2 rounded-lg">
+              Itinerary for {itinerary.city}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {itinerary.days.map((day) => (
-              <ItineraryCard key={day.day} day={day.day} locations={day.locations} activities={day.activities} />
-            ))}
+            {itinerary.days && Array.isArray(itinerary.days) ? (
+              itinerary.days.map((day) => (
+                <ItineraryCard key={day.day} day={day.day} locations={day.locations} activities={day.activities} />
+              ))
+            ) : (
+              <p>No itinerary days available</p>
+            )}
           </CardContent>
         </Card>
       </div>
-
+      
       {/* Right Section - Map */}
       <div className="lg:col-span-2 flex flex-col">
         <Card className="flex-grow">
@@ -41,98 +103,21 @@ export default function ItineraryPage() {
             <CardTitle className="text-xl font-semibold">Map View</CardTitle>
           </CardHeader>
           <CardContent className="h-full">
-            <MapComponent
-              locations={itinerary.days.flatMap((day) =>
-                day.locations.map((loc) => ({
-                  lat: Number(loc.latitude) || 0,
-                  lng: Number(loc.longitude) || 0,
-                  name: loc.name,
-                }))
+            {console.log("Map locations before passing to MapComponent:", mapLocations)}
+            
+            {/* Debug information about locations */}
+            <div className="text-xs text-gray-500 mb-2">
+              Locations count: {mapLocations.length}
+              {mapLocations.length > 0 && (
+                <span> (First location: {JSON.stringify(mapLocations[0])})</span>
               )}
-            />
+            </div>
+            
+            {/* Pass the processed locations directly to MapComponent */}
+            <MapComponent locations={mapLocations} />
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
-
-
-// import React, { useState, useEffect } from "react";
-// import { useItinerary } from "hooks/useItinerary";
-// import ItineraryList from "components/itinerary/ItineraryList";
-// import ItineraryCard from "components/itinerary/ItineraryCard";
-// import MapComponent from "components/Map/MapComponent";
-
-// export default function ItineraryPage() {
-//   const [selectedItinerary, setSelectedItinerary] = useState(null);
-//   const { itinerary, loading, error, createItinerary } = useItinerary();
-
-//   // ✅ Fetch itinerary when selectedItinerary changes
-//   useEffect(() => {
-//     if (!itinerary) {
-//       createItinerary("Paris", "2024-06-01", "2024-06-05");
-//     }
-//   }, [selectedItinerary]);  // Re-fetch when selection changes
-
-//   if (loading) return <div className="spinner">Loading...</div>;
-//   if (error) return <div className="error-message">Error: {error.message}</div>;
-//   if (!itinerary) return <div className="text-gray-500">No itinerary available.</div>;
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <h1 className="text-2xl font-bold mb-4">{itinerary?.itinerary?.title || "Your Itinerary"}</h1>
-
-//       <div className="grid md:grid-cols-2 gap-6 sm:grid-cols-1">
-
-//         {/* Left Panel - Itinerary List & Activities */}
-//         <div>
-//           <ItineraryList itineraries={[itinerary.itinerary]} selectItinerary={setSelectedItinerary} />
-//           {selectedItinerary && itinerary?.days?.map((dayData, index) => (
-//             <ItineraryCard key={index} day={dayData.day} locations={dayData.locations} activities={dayData.activities} />
-//           ))}
-//         </div>
-
-//         {/* Right Panel - Map */}
-//         <div>
-//         <MapComponent locations={itinerary?.days?.flatMap(day => day.locations) || []} aria-label="Map of itinerary locations" />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// // "use client";
-// // import { useState } from "react";
-// // import { Home } from "./components/Home";
-// // import { generateItinerary } from "./Utils/helpers";
-// // import { cities, cityActivities } from "./data/cities";
-
-// // export default function ItineraryPage() {
-// //   const [currentView, setCurrentView] = useState("home");
-// //   const [itineraries, setItineraries] = useState([]);
-// //   const [currentItinerary, setCurrentItinerary] = useState(null);
-
-// //   const addItinerary = (newItinerary) => {
-// //     if (newItinerary.name && newItinerary.city && newItinerary.startDate && newItinerary.endDate) {
-// //       const generatedItems = generateItinerary(newItinerary.city, newItinerary.startDate, newItinerary.endDate, cityActivities);
-// //       const itinerary = {
-// //         id: Date.now(),
-// //         ...newItinerary,
-// //         items: generatedItems,
-// //       };
-// //       setItineraries([...itineraries, itinerary]);
-// //       setCurrentItinerary(itinerary);
-// //       setCurrentView("itinerary");
-// //     }
-// //   };
-
-// //   return (
-// //     <div className="min-h-screen bg-gray-100">
-// //       {currentView === "home" && <Home itineraries={itineraries} setCurrentView={setCurrentView} setCurrentItinerary={setCurrentItinerary} />}
-// //       {/* Other Views: Itinerary Details, Dashboard, etc. */}
-// //     </div>
-// //   );
-// // }

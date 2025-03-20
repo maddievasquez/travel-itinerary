@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  content: [
+    "./src/**/*.{html,js,jsx,ts,tsx}", // Adjust this path to your file structure
+    './public/index.html',
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
@@ -37,6 +40,18 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        teal: {
+          light: '#1F8A8A', // custom teal light color
+          DEFAULT: '#2B8D8D', // default teal color
+        },
+        midnightBlue: '#34495E',
+        lightGrey: '#ECF0F1',
+        coral: '#FF6F61',
+        mustardYellow: '#F39C12',
+        white: '#FFFFFF',
+        gray: {
+          500: '#6B7280',
         },
       },
       borderRadius: {

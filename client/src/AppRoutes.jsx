@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import UserProfile from "./components/user/UserProfile";
 import ItineraryPage from "./components/itinerary/Itinerary-Page";
 import MyItineraries from "./pages/MyItinerariesPage";
+import ForgotPassword from "./components/user/ForgotPassword";
+import ResetPassword from "./components/user/ResetPassword";
 
 export default function AppRoutes() {
   return (
@@ -21,6 +23,8 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/my-itineraries" element={<MyItineraries />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

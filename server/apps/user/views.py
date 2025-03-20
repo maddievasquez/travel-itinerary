@@ -11,10 +11,17 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer  # serializer for the User model
-from .models import UserSettings 
+from server.apps.user.serializers import UserSerializer, UserSettingsSerializer  # serializer for the User model
+from server.apps.user.models import UserSettings 
 User = get_user_model()  # Fetch the custom user model if it exists
-
+from rest_framework.generics import ListAPIView
+from server.apps.itinerary.models import Itinerary
+from server.apps.itinerary.serializers import ItinerarySerializer
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
 class UserView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access this view
 
@@ -83,6 +90,7 @@ class UserProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 class UserSettingsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -98,3 +106,51 @@ class UserSettingsView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+class UserItinerariesView(ListAPIView):
+    """Retrieve the itineraries belonging to the authenticated user."""
+    serializer_class = ItinerarySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Itinerary.objects.filter(user=self.request.user)
+    
+
+# Password reset
+class PasswordResetView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        try:
+            user = User.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            reset_url = request.build_absolute_uri(reverse('password_reset_confirm')) + f"?token={token}&email={email}"
+
+            send_mail(
+                "Password Reset Request",
+                f"Click the link to reset your password: {reset_url}",
+                "admin@yourdomain.com",
+                [email],
+                fail_silently=False,
+            )
+
+            return Response({"message": "Reset link sent to email"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class PasswordResetConfirmView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        token = request.data.get("token")
+        new_password = request.data.get("new_password")
+
+        try:
+            user = User.objects.get(email=email)
+
+            if not default_token_generator.check_token(user, token):
+                return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)

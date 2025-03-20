@@ -14,7 +14,7 @@ export default function MyItineraries() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">My Itineraries</h1>
-      
+
       {itineraries.length === 0 ? (
         <p className="text-center">You have no saved itineraries.</p>
       ) : (
@@ -23,7 +23,7 @@ export default function MyItineraries() {
             <Card
               key={itinerary.id}
               className="cursor-pointer hover:bg-gray-100 p-4 rounded-lg transition"
-              onClick={() => navigate(`/itinerary/${itinerary.id}`)} // ✅ Navigate to itinerary details
+              onClick={() => navigate(`/itinerary/${itinerary.id}`)} // ✅ Navigate to unique itinerary
             >
               <CardHeader>
                 <CardTitle className="flex items-center">
