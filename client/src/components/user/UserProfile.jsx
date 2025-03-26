@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import axios from "axios";
 import { Mail, Edit2, Check, X } from "lucide-react";
 
 import Button from "../ui/button";
 import  Input from "../ui/input";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 
 export default function UserProfile() {

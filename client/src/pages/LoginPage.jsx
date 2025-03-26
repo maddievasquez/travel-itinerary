@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Cookie from "../components/cookies";
 import { useNavigate, Link } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+// import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
@@ -160,7 +160,7 @@ export default function LoginPage() {
 
           <div className="mt-6">
             {/* Replace the button with GoogleOAuthProvider and GoogleLogin */}
-            <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+            {/* <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
               <div className="flex justify-center">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
@@ -173,7 +173,7 @@ export default function LoginPage() {
                   width="100%"
                 />
               </div>
-            </GoogleOAuthProvider>
+            </GoogleOAuthProvider> */}
           </div>
         </div>
       </div>

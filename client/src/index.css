@@ -13,3 +13,26 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+.leaflet-marker-icon.custom-marker-icon {
+  background: transparent;
+  border: none;
+}
+
+.map-popup {
+  min-width: 200px;
+  font-family: sans-serif;
+}
+
+.map-popup h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 5px;
+}

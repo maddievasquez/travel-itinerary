@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "../ui/card";
 import ItineraryCard from "./ItineraryCard";
 import MapComponent from "../Map/MapComponent";
 

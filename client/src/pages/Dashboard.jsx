@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../components/ui/card";
+import Card, { CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "../components/ui/card";
+
 import ScrollArea from "../components/ui/scroll-area";
 
 const containerStyle = {

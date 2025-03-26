@@ -12,7 +12,7 @@ export function useItinerary() {
       const token = Cookie.getCookie("access") || localStorage.getItem("userToken");
       if (!token) throw new Error("Unauthorized: No valid token");
 
-      const response = await fetch("http://127.0.0.1:8000/api/locations/generate-itinerary/", {
+      const response = await fetch("http://127.0.0.1:8000/api/locations/generate-itinerary/", { //Url that is used to create the itinerary
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,231 +1,191 @@
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import useItineraryMap from "../../hooks/useItineraryMap";
+import { createCustomIcon } from "./mapIconsConfig"; // Correct import
 
-// This component handles map adjustments after the map is initialized
-function MapView({ locations }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (locations && locations.length > 0) {
-      console.log("MapView received locations:", locations);
-
-      // Filter for valid coordinates and create bounds
-      const validLocations = locations.filter((loc) => {
-        const hasLat = loc.latitude !== undefined || loc.lat !== undefined;
-        const hasLng = loc.longitude !== undefined || loc.lng !== undefined;
-        const validLat = !isNaN(parseFloat(loc.latitude || loc.lat));
-        const validLng = !isNaN(parseFloat(loc.longitude || loc.lng));
-
-        return hasLat && hasLng && validLat && validLng;
-      });
-
-      console.log("Valid locations for bounds:", validLocations);
-
-      if (validLocations.length > 0) {
-        const bounds = L.latLngBounds(
-          validLocations.map((loc) => [
-            parseFloat(loc.latitude || loc.lat),
-            parseFloat(loc.longitude || loc.lng),
-          ])
-        );
-
-        console.log("Setting map bounds:", bounds);
-
-        // Add a small timeout to ensure the map has fully initialized
-        const timeoutId = setTimeout(() => {
-          map.invalidateSize();
-          map.fitBounds(bounds, { padding: [50, 50] });
-          console.log("Map bounds set");
-        }, 300);
-
-        // Cleanup timeout on unmount
-        return () => clearTimeout(timeoutId);
-      }
-    }
-  }, [locations, map]);
-
-  return null;
-}
-
-// Fix for Leaflet marker icon issue in React
-const fixLeafletMarker = () => {
-  if (typeof window !== "undefined") {
-    delete L.Icon.Default.prototype._getIconUrl;
-
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-      iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-      shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-    });
-  }
-};
-
+/**
+ * Interactive Map Component with Category-Specific Markers
+ * 
+ * Features:
+ * - Displays locations with custom category-based icons
+ * - Auto-zooms to fit all markers
+ * - Shows detailed popups on marker click
+ * - Handles loading/error states gracefully
+ * - Supports both direct locations and itinerary-based fetching
+ * 
+ * Props:
+ * @param {string} [itineraryId] - ID for fetching itinerary locations
+ * @param {Array} [directLocations] - Pre-loaded locations array
+ */
 export default function MapComponent({ itineraryId, locations: directLocations }) {
-  const [locations, setLocations] = useState([]);
+  // Refs
+  const mapRef = useRef(null); // Map container DOM element
+  const mapInstanceRef = useRef(null); // Leaflet map instance
+  const markersRef = useRef([]); // Track marker instances
+
+  // State
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [mapKey, setMapKey] = useState(0);
+  const [locations, setLocations] = useState([]);
 
-  // Use the hook unconditionally
-  const hookResult = useItineraryMap(itineraryId);
+  // Custom hook for itinerary data
+  const { locations: hookLocations, loading: hookLoading, error: hookError } = useItineraryMap(itineraryId);
 
-  // Debug props
-  console.log("MapComponent received props:", {
-    itineraryId,
-    directLocations: directLocations ? directLocations.length : 0,
-  });
-
-  if (directLocations) {
-    console.log("First few locations:", directLocations.slice(0, 2));
-  }
-
-  // Fix Leaflet marker icon issue when component mounts
+  /**
+   * Cleanup effect - removes map and markers when unmounting
+   */
   useEffect(() => {
-    fixLeafletMarker();
+    return () => {
+      // Clear all markers
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+      
+      // Remove map instance
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
   }, []);
 
-  // Process locations based on props
+  /**
+   * Data source selection effect:
+   * - Prioritizes directLocations if provided
+   * - Falls back to hook data if itineraryId exists
+   * - Manages loading/error states
+   */
   useEffect(() => {
-    console.log("Processing locations in MapComponent");
-
-    // Log the current state before making changes
-    console.log("Current state:", { locations, loading, error });
-
-    // IMPORTANT: We need to strictly check for array with actual elements
-    if (directLocations && Array.isArray(directLocations) && directLocations.length > 0) {
-      console.log("Using direct locations:", directLocations);
+    if (directLocations?.length > 0) {
+      // Case 1: Use direct locations
       setLocations(directLocations);
       setLoading(false);
       setError(null);
-    } else if (itineraryId && hookResult.locations && hookResult.locations.length > 0) {
-      console.log("Using hook locations:", hookResult.locations);
-      setLocations(hookResult.locations);
-      setLoading(hookResult.loading);
-      setError(hookResult.error);
+    } else if (itineraryId) {
+      // Case 2: Use hook data
+      setLocations(hookLocations);
+      setLoading(hookLoading);
+      setError(hookError);
     } else {
-      console.log("No valid locations source found");
-      if (!directLocations && !itineraryId) {
-        setError("No locations or itineraryId provided");
-      } else if (directLocations && directLocations.length === 0) {
-        setError("Provided locations array is empty");
-      } else if (itineraryId && (!hookResult.locations || hookResult.locations.length === 0)) {
-        setError("No locations found for the provided itineraryId");
-      }
+      // Case 3: Handle missing data
+      setError(directLocations?.length === 0 ? 
+        "Provided locations array is empty" : 
+        "No locations or itineraryId provided"
+      );
       setLoading(false);
     }
-  }, [directLocations, itineraryId, hookResult.locations, hookResult.loading, hookResult.error]);
+  }, [directLocations, itineraryId, hookLocations, hookLoading, hookError]);
 
-  // Force map to re-render when locations change
+  /**
+   * Map initialization and marker management
+   */
   useEffect(() => {
-    if (locations && locations.length > 0 && !loading) {
-      console.log("Forcing map re-render with key:", mapKey + 1);
-      setMapKey((prevKey) => prevKey + 1);
-    }
-  }, [locations, loading]);
+    if (loading || error || !locations.length || !mapRef.current) return;
 
-  // Early return states with more detailed messages
-  if (loading) {
-    return <div className="p-4 text-center">Loading map data...</div>;
-  }
+    const initTimer = setTimeout(() => {
+      try {
+        const validLocations = locations.filter(loc => {
+          const lat = parseFloat(loc.latitude);
+          const lng = parseFloat(loc.longitude);
+          return !isNaN(lat) && !isNaN(lng);
+        });
 
-  if (error) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        <p>Error loading map: {error}</p>
-        <p className="text-sm mt-2">
-          Debug info: {JSON.stringify({
-            hasDirectLocations: Boolean(directLocations && directLocations.length),
-            hasItineraryId: Boolean(itineraryId),
-            locationsCount: locations?.length || 0,
-          })}
-        </p>
-      </div>
-    );
-  }
+        if (!validLocations.length) {
+          setError("No valid coordinates found");
+          return;
+        }
 
-  if (!locations || locations.length === 0) {
-    return (
-      <div className="p-4 text-center">
-        <p>No locations available for this map</p>
-        <p className="text-sm mt-2">
-          Debug info: {JSON.stringify({
-            hasDirectLocations: Boolean(directLocations && directLocations.length),
-            hasItineraryId: Boolean(itineraryId),
-            locationsCount: locations?.length || 0,
-          })}
-        </p>
-      </div>
-    );
-  }
+        if (!mapInstanceRef.current) {
+          mapInstanceRef.current = L.map(mapRef.current).setView(
+            [validLocations[0].latitude, validLocations[0].longitude], 
+            12
+          );
+          
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          }).addTo(mapInstanceRef.current);
+        }
 
-  // Find first valid location for initial center or default to Tokyo
-  const defaultCenter = [35.6895, 139.6917]; // Tokyo
-  let center = defaultCenter;
+        // Clear existing markers
+        markersRef.current.forEach(marker => marker.remove());
+        markersRef.current = [];
 
-  // Try to find a valid location for the center
-  for (const loc of locations) {
-    const lat = parseFloat(loc.latitude || loc.lat);
-    const lng = parseFloat(loc.longitude || loc.lng);
-
-    if (!isNaN(lat) && !isNaN(lng)) {
-      center = [lat, lng];
-      console.log("Found valid center:", center);
-      break;
-    }
-  }
-
-  return (
-    <div className="map-container" style={{ height: "500px", width: "100%" }}>
-      <MapContainer
-        key={mapKey}
-        center={center}
-        zoom={12}
-        style={{ height: "100%", width: "100%" }}
-        whenCreated={(map) => {
-          console.log("Map created");
-          // Force map to update its size after container might have changed
-          setTimeout(() => {
-            map.invalidateSize();
-            console.log("Map size invalidated");
-          }, 300);
-        }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
-        <MapView locations={locations} />
-
-        {locations
-          .filter((loc) => {
-            const hasCoords = (loc.latitude || loc.lat) && (loc.longitude || loc.lng);
-            const validCoords = !isNaN(parseFloat(loc.latitude || loc.lat)) && !isNaN(parseFloat(loc.longitude || loc.lng));
-            return hasCoords && validCoords;
-          })
-          .map((loc, index) => {
-            const lat = parseFloat(loc.latitude || loc.lat);
-            const lng = parseFloat(loc.longitude || loc.lng);
-            console.log(`Marker ${index} at [${lat}, ${lng}]`);
-
-            return (
-              <Marker
-                key={`marker-${index}-${loc.name || "location"}`}
-                position={[lat, lng]}
-              >
-                <Popup>
-                  <div>
-                    <strong>{loc.name || "Unnamed Location"}</strong>
-                    {loc.address && <p>{loc.address}</p>}
+        // Add new markers
+        validLocations.forEach(location => {
+          try {
+            const icon = createCustomIcon(location.category || 'default');
+            
+            const marker = L.marker(
+              [location.latitude, location.longitude],
+              { 
+                icon,
+                title: location.name 
+              }
+            )
+            .addTo(mapInstanceRef.current)
+            .bindPopup(`
+              <div class="map-popup">
+                <h4>${location.name || 'Unnamed Location'}</h4>
+                ${location.address ? `<p>${location.address}</p>` : ''}
+                ${location.category ? `
+                  <div class="category-tag">
+                    ${location.category}
                   </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-      </MapContainer>
+                ` : ''}
+              </div>
+            `);
+
+            markersRef.current.push(marker);
+          } catch (iconError) {
+            console.error(`Failed to create marker for ${location.name}:`, iconError);
+          }
+        });
+
+        if (validLocations.length > 1) {
+          const bounds = L.latLngBounds(
+            validLocations.map(loc => [loc.latitude, loc.longitude])
+          );
+          mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+        }
+
+        mapInstanceRef.current.invalidateSize();
+      } catch (err) {
+        console.error("Map initialization error:", err);
+        setError("Failed to initialize map");
+      }
+    }, 100);
+
+    return () => clearTimeout(initTimer);
+  }, [locations, loading, error]);
+
+  // Render states
+  if (loading) return (
+    <div className="map-status loading">
+      <p>Loading map data...</p>
     </div>
+  );
+
+  if (error) return (
+    <div className="map-status error">
+      <p>Error: {error}</p>
+    </div>
+  );
+
+  if (!locations.length) return (
+    <div className="map-status empty">
+      <p>No locations available</p>
+    </div>
+  );
+
+  // Main map container
+  return (
+    <div 
+      ref={mapRef}
+      className="map-container"
+      style={{ height: "500px", width: "100%" }}
+      aria-label="Interactive location map"
+      role="application"
+      tabIndex="0" // Make focusable for accessibility
+    />
   );
 }

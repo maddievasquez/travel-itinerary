@@ -6,9 +6,10 @@ import SignupPage from "./pages/SingUpPage";
 import Dashboard from "./pages/Dashboard";
 import UserProfile from "./components/user/UserProfile";
 import ItineraryPage from "./components/itinerary/Itinerary-Page";
-import MyItineraries from "./pages/MyItinerariesPage";
 import ForgotPassword from "./components/user/ForgotPassword";
 import ResetPassword from "./components/user/ResetPassword";
+import ItineraryDetail from './components/itinerary/ItineraryDetail';
+import MyItineraries from './pages/MyItinerariesPage';
 
 export default function AppRoutes() {
   return (
@@ -22,7 +23,8 @@ export default function AppRoutes() {
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/my-itineraries" element={<MyItineraries />} />
+        <Route path="/itineraries" element={<MyItineraries />} />
+        <Route path="/itinerary/:id" element={<ItineraryDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>

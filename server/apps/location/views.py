@@ -167,17 +167,26 @@ class GenerateItineraryAPIView(APIView):
                 else:
                     return Response({"error": "Failed to generate itinerary"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                locations = Location.objects.filter(city__iexact=city)
+                locations = Location.objects.filter(city__iexact=city).only(
+    'id', 'name', 'latitude', 'longitude', 'address', 'category'
+)
+                print("First location category:", locations.first().category)
                 if not locations:
                     return Response({"error": "No locations found for the specified city"}, status=status.HTTP_404_NOT_FOUND)
 
                 itinerary, itinerary_data = generate_itinerary_with_activities(user, city, start_date, end_date, locations)
                 print("Itinerary created:", itinerary.id)  # Debugging log
+                
 
-                return Response({
-                    "itinerary": ItinerarySerializer(itinerary).data,
-                    "days": itinerary_data
-                }, status=status.HTTP_201_CREATED)
+                print("FINAL OUTPUT CATEGORIES CHECK:")
+                for day in itinerary_data:
+                    for loc in day['locations']:
+                        print(f"{loc['name']}: {loc.get('category', 'MISSING')}")
+
+            return Response({
+                "itinerary": ItinerarySerializer(itinerary).data,
+                "days": itinerary_data
+            }, status=status.HTTP_201_CREATED)
         except ValueError as e:
             print("Error:", e)
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
