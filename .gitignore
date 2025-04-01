@@ -25,3 +25,4 @@ client/yarn-error.log*
 .venv
 .env
 .client/.env.local
+node_modules

@@ -2,6 +2,7 @@
 
 # Create your views here.
 # user/views.py
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import authenticate
@@ -11,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from server.apps.user.serializers import UserSerializer, UserSettingsSerializer  # serializer for the User model
+from server.apps.user.serializers import SignupSerializer, UserSerializer, UserSettingsSerializer  # serializer for the User model
 from server.apps.user.models import UserSettings 
 User = get_user_model()  # Fetch the custom user model if it exists
 from rest_framework.generics import ListAPIView
@@ -22,6 +23,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
+from rest_framework.exceptions import NotAuthenticated, AuthenticationFailed
 class UserView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access this view
 
@@ -39,36 +41,62 @@ class UserView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # Sign-up
-class SignUpView(APIView):
+class SignupView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            
+            # Generate tokens for immediate login
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'user': {
+                    'id': user.id,
+                    'email': user.email
+                }
+            }, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Login
+# In your views.py
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
-        
         username = request.data.get('username')
         password = request.data.get('password')
         
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(username=username, password=password)
+        
         if user is not None:
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Invalid credentials"}, 
+            status=400,
+            content_type="application/json"  # Explicitly set content type
+        )
+        
 # Logout
 class LogoutView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        logout(request)
-        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        try:
+            # Simply invalidate the token on the client side
+            # JWT tokens can't be invalidated server-side without a blacklist
+            return Response({"message": "Successfully logged out"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can access this endpoint
 
@@ -85,9 +113,9 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """Retrieve the profile of the logged-in user."""
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 
@@ -107,13 +135,21 @@ class UserSettingsView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 class UserItinerariesView(ListAPIView):
-    """Retrieve the itineraries belonging to the authenticated user."""
     serializer_class = ItinerarySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Itinerary.objects.filter(user=self.request.user)
     
+    def handle_exception(self, exc):
+        
+        if isinstance(exc, (NotAuthenticated, AuthenticationFailed)):
+            return Response(
+                {"detail": "Authentication credentials were not provided or are invalid."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        return super().handle_exception(exc)
+
 
 # Password reset
 class PasswordResetView(APIView):

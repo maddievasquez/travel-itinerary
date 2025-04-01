@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Cookie from "../cookies";
 import { Calendar, MapPin, Clock, Info, ArrowLeft } from "lucide-react";
-import { format } from "date-fns";
-import MapComponent from "../Map/MapComponent"; // Import your map component
+import { format, parseISO } from "date-fns";
+import MapComponent from "../Map/MapComponent";
+import ItineraryCard from "./ItineraryCard"; // Import the ItineraryCard component
 
 const ItineraryDetail = () => {
-  const { id } = useParams(); // Get the itinerary ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [itinerary, setItinerary] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -77,6 +78,42 @@ const ItineraryDetail = () => {
     fetchItineraryDetails();
   }, [id, navigate]);
 
+  // Group activities by day
+  const groupActivitiesByDay = () => {
+    if (!itinerary || !activities.length) return {};
+    
+    const days = {};
+    const startDate = parseISO(itinerary.start_date);
+    const endDate = parseISO(itinerary.end_date);
+    
+    // Initialize days object
+    let currentDate = new Date(startDate);
+    let dayCount = 1;
+    
+    while (currentDate <= endDate) {
+      days[`Day ${dayCount}`] = {
+        date: new Date(currentDate),
+        activities: []
+      };
+      currentDate.setDate(currentDate.getDate() + 1);
+      dayCount++;
+    }
+    
+    // Assign activities to days
+    activities.forEach(activity => {
+      if (activity.day) {
+        const dayKey = `Day ${activity.day}`;
+        if (days[dayKey]) {
+          days[dayKey].activities.push(activity);
+        }
+      }
+    });
+    
+    return days;
+  };
+
+  const daysWithActivities = groupActivitiesByDay();
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Back button */}
@@ -102,11 +139,11 @@ const ItineraryDetail = () => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
               <MapPin className="mr-2 text-blue-600" /> 
-              {itinerary.city}
+              {itinerary.city}, {itinerary.country}
             </h1>
             <div className="flex items-center text-gray-600 mb-4">
               <Calendar className="mr-2 h-4 w-4 text-blue-600" />
-              {format(new Date(itinerary.start_date), "MMM d")} - {format(new Date(itinerary.end_date), "MMM d, yyyy")}
+              {format(parseISO(itinerary.start_date), "MMM d, yyyy")} - {format(parseISO(itinerary.end_date), "MMM d, yyyy")}
             </div>
             {itinerary.description && (
               <p className="text-gray-700">{itinerary.description}</p>
@@ -116,37 +153,23 @@ const ItineraryDetail = () => {
           {/* Two-column layout for schedule and map */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left column - Schedule */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <h2 className="text-xl font-semibold mb-4">Itinerary Schedule</h2>
-                
-                {activities.length > 0 ? (
-                  <div className="space-y-4">
-                    {activities.map((activity, index) => (
-                      <div key={activity.id} className="border-l-2 border-blue-500 pl-4 py-2">
-                        <div className="font-medium text-gray-800">{activity.name}</div>
-                        {activity.location && (
-                          <div className="text-sm text-gray-600 flex items-center mt-1">
-                            <MapPin className="h-3 w-3 mr-1" /> {activity.location}
-                          </div>
-                        )}
-                        {activity.time && (
-                          <div className="text-sm text-gray-600 flex items-center mt-1">
-                            <Clock className="h-3 w-3 mr-1" /> {activity.time}
-                          </div>
-                        )}
-                        {activity.notes && (
-                          <div className="text-sm text-gray-600 flex items-start mt-1">
-                            <Info className="h-3 w-3 mr-1 mt-1" /> {activity.notes}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No activities added yet.</p>
-                )}
-              </div>
+            <div className="lg:col-span-1 space-y-4">
+              <h2 className="text-xl font-semibold mb-4">Daily Itinerary</h2>
+              
+              {Object.keys(daysWithActivities).length > 0 ? (
+                Object.entries(daysWithActivities).map(([day, { date, activities }]) => (
+                  <ItineraryCard
+                    key={day}
+                    day={day.replace('Day ', '')}
+                    date={date}
+                    activities={activities}
+                  />
+                ))
+              ) : (
+                <div className="bg-white rounded-lg shadow-md p-4">
+                  <p className="text-gray-500">No activities planned yet.</p>
+                </div>
+              )}
             </div>
             
             {/* Right column - Map */}

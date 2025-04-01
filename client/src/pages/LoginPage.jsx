@@ -18,38 +18,48 @@ export default function LoginPage() {
 
   const onSubmit = async (loginData) => {
     const formData = new FormData();
-    Object.keys(loginData).forEach((key) => {
-      formData.append(key, loginData[key]);
-    });
-    const options = {
-      method: "POST",
-      body: formData,
-    };
-
-    const url = "http://127.0.0.1:8000/api/auth/login/";
-
+    formData.append('username', loginData.username);
+    formData.append('password', loginData.password);
+  
     try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        setMessage("Invalid credentials.");
-        throw new Error("Network response was not ok");
-      }
-      const successLoginData = await response.json();
-      // Store token in cookies
-      Object.keys(successLoginData).forEach((key) => {
-        Cookie.setCookie(key, successLoginData[key]);
+      const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+        method: "POST",
+        body: formData,
       });
-
+  
+      // First check if response is HTML
+      const responseText = await response.text();
+      let responseData;
+      
+      try {
+        responseData = JSON.parse(responseText); // Try to parse as JSON
+      } catch {
+        // If not JSON, show server error
+        setMessage("Server error - please try again later");
+        console.error("Server returned:", responseText);
+        return;
+      }
+  
+      if (!response.ok) {
+        setMessage(responseData.error || "Invalid credentials");
+        return;
+      }
+  
+      // Store tokens
+      Cookie.setCookie('access', responseData.access);
+      Cookie.setCookie('refresh', responseData.refresh);
+  
       if (document.getElementById("remember").checked) {
         localStorage.setItem("rememberedUsername", loginData.username);
       } else {
         localStorage.removeItem("rememberedUsername");
       }
-
+  
       navigate("/", { replace: true });
       window.location.reload();
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.error("Login error:", error);
+      setMessage(error.message || "Login failed. Please try again.");
     }
   };
 

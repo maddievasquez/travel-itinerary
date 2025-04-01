@@ -1,3 +1,5 @@
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function Card({ children, className = "" }) {
   return (
@@ -6,6 +8,10 @@ export default function Card({ children, className = "" }) {
     </div>
   );
 }
+Card.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+};
 
 export function CardHeader({ children }) {
   return <div className="border-b pb-2 mb-2">{children}</div>;
@@ -26,3 +32,5 @@ export function CardFooter({ children }) {
 export function CardDescription({ children }) {
   return <p className="text-gray-500">{children}</p>;
 }
+// // Export all components
+// export { Card, CardHeader, CardTitle, CardContent, CardFooter };

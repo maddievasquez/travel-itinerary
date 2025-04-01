@@ -20,7 +20,10 @@ export default function Footer() {
 
 function FooterLink({ to, icon, label }) {
   return (
-    <Link to={to} className="flex items-center text-[#2B8D8D] text-sm hover:text-[#FF6F61] transition-colors">
+    <Link
+      to={to}
+      className="flex items-center text-[#2B8D8D] text-sm hover:text-[#FF6F61] transition-colors"
+    >
       {icon}
       <span className="ml-1.5">{label}</span>
     </Link>

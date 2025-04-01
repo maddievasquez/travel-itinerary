@@ -189,10 +189,12 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
          'rest_framework_simplejwt.authentication.JWTAuthentication',
+        #  'rest_framework.authentication.SessionAuthentication',
         #  'rest_framework.authentication.SessionAuthentication',  # For logged-in users
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated', // TODO: set it for view specific permissions rather than global
+        # 'rest_framework.permissions.IsAuthenticated', 
+        # /// TODO: set it for view specific permissions rather than global
 
     ],
 }
@@ -220,12 +222,15 @@ SIMPLE_JWT = {
 CORS_ORIGIN_ALLOW_ALL=True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React (or any other frontend) development server
-    # "https://your-frontend-domain.com",  # Add your deployed frontend URL here
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    # "http://127.0.0.1:8000",
+    # "http://localhost:5173",
+    # "http://127.0.0.1:5173",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+# CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 MAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.office365.com"
@@ -234,3 +239,24 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Outlook email
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  #Outlook password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Email sender name
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

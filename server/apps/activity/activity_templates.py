@@ -27,3 +27,4 @@ ACTIVITY_TEMPLATES = {
         "Get close to nature with a visit to {name}."
     ],
 }
+
