@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import authService from "../services/auth"; // Import your auth service directly
+import authService from "../services/auth";
+import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -49,23 +50,11 @@ export default function useUserItineraries() {
     }
   }, []);
   
-  // Create new itinerary
+  // Create new itinerary - replaced fetch with axios
   const createItinerary = useCallback(async (itineraryData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/itineraries/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Auth headers will be added by axios interceptors
-        },
-        body: JSON.stringify(itineraryData)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create itinerary');
-      }
-      
-      const newItinerary = await response.json();
+      const response = await axios.post(`${API_BASE_URL}/itineraries/`, itineraryData);
+      const newItinerary = response.data;
       
       // Update local state
       setItineraries(current => [...current, newItinerary]);
@@ -77,23 +66,11 @@ export default function useUserItineraries() {
     }
   }, []);
   
-  // Update existing itinerary
+  // Update existing itinerary - replaced fetch with axios
   const updateItinerary = useCallback(async (id, itineraryData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/itineraries/${id}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          // Auth headers will be added by axios interceptors
-        },
-        body: JSON.stringify(itineraryData)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update itinerary');
-      }
-      
-      const updatedItinerary = await response.json();
+      const response = await axios.put(`${API_BASE_URL}/itineraries/${id}/`, itineraryData);
+      const updatedItinerary = response.data;
       
       // Update local state
       setItineraries(current => 
@@ -107,17 +84,10 @@ export default function useUserItineraries() {
     }
   }, []);
   
-  // Delete itinerary
+  // Delete itinerary - replaced fetch with axios
   const deleteItinerary = useCallback(async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/itineraries/${id}/`, {
-        method: 'DELETE',
-        // Auth headers will be added by axios interceptors
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete itinerary');
-      }
+      await axios.delete(`${API_BASE_URL}/itineraries/${id}/`);
       
       // Update local state
       setItineraries(current => current.filter(item => item.id !== id));

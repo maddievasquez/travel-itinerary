@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus, Calendar, User } from 'lucide-react';
 
-const ItineraryCard = ({ day, locations = [], activities = [] }) => {
+const ItineraryCard = ({ 
+  day, 
+  locations = [], 
+  activities = [], 
+  itinerary, 
+  onClick, 
+  minimal = false 
+}) => {
   const [expanded, setExpanded] = useState(true);
-  
+
   // Get appropriate icon for activity type
   const getActivityIcon = (category) => {
     switch (category?.toLowerCase()) {
@@ -27,7 +34,7 @@ const ItineraryCard = ({ day, locations = [], activities = [] }) => {
     }
   };
 
-  // Ensure activities is an array
+  // Ensure activities and locations are arrays
   const activitiesList = Array.isArray(activities) ? activities : [];
   const locationsList = Array.isArray(locations) ? locations : [];
 
@@ -37,6 +44,81 @@ const ItineraryCard = ({ day, locations = [], activities = [] }) => {
     return a.start_time.localeCompare(b.start_time);
   });
 
+  // Render minimal card for itinerary overview
+  if (itinerary) {
+    return (
+      <div 
+        className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-white cursor-pointer"
+        onClick={onClick}
+      >
+        <div className="p-4 h-full flex flex-col">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
+              {itinerary.title || "Untitled Itinerary"}
+            </h3>
+            {!minimal && itinerary.status && (
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                itinerary.status === 'published' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                {itinerary.status}
+              </span>
+            )}
+          </div>
+          
+          <div className="flex-grow">
+            {!minimal && itinerary.description && (
+              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                {itinerary.description}
+              </p>
+            )}
+            
+            <div className="space-y-2">
+              {itinerary.city && (
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-2 text-teal-500" />
+                  <span className="text-sm">
+                    {itinerary.city}
+                    {itinerary.country && `, ${itinerary.country}`}
+                  </span>
+                </div>
+              )}
+              
+              {itinerary.start_date && (
+                <div className="flex items-center text-gray-700">
+                  <Calendar className="w-4 h-4 mr-2 text-teal-500" />
+                  <span className="text-sm">
+                    {new Date(itinerary.start_date).toLocaleDateString()}
+                    {itinerary.end_date && ` → ${new Date(itinerary.end_date).toLocaleDateString()}`}
+                  </span>
+                </div>
+              )}
+              
+              {!minimal && (
+                <div className="flex items-center text-gray-700">
+                  <span className="text-sm">
+                    {itinerary.days?.length || 0} days • 
+                    {itinerary.total_locations || 0} locations
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {!minimal && (
+          <div className="border-t border-gray-200 px-4 py-2 bg-gray-50">
+            <span className="text-xs text-gray-500">
+              {itinerary.updated_at && `Last updated: ${new Date(itinerary.updated_at).toLocaleDateString()}`}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Render detailed card for day view
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
       <div 
