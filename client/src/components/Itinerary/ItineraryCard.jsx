@@ -27,8 +27,12 @@ const ItineraryCard = ({ day, locations = [], activities = [] }) => {
     }
   };
 
+  // Ensure activities is an array
+  const activitiesList = Array.isArray(activities) ? activities : [];
+  const locationsList = Array.isArray(locations) ? locations : [];
+
   // Sort activities by start_time if available
-  const sortedActivities = [...activities].sort((a, b) => {
+  const sortedActivities = [...activitiesList].sort((a, b) => {
     if (!a.start_time || !b.start_time) return 0;
     return a.start_time.localeCompare(b.start_time);
   });
@@ -52,14 +56,14 @@ const ItineraryCard = ({ day, locations = [], activities = [] }) => {
       {expanded && (
         <div className="p-4 space-y-4">
           {/* Locations Section */}
-          {locations.length > 0 && (
+          {locationsList.length > 0 && (
             <div className="mb-4">
               <h4 className="font-medium text-gray-700 mb-2 flex items-center">
                 <MapPin className="h-4 w-4 mr-2 text-teal-500" />
                 Locations
               </h4>
               <div className="space-y-3">
-                {locations.map((location, index) => (
+                {locationsList.map((location, index) => (
                   <div 
                     key={`location-${index}`} 
                     className="flex items-start pl-2 hover:bg-gray-50 rounded p-1"
@@ -120,7 +124,7 @@ const ItineraryCard = ({ day, locations = [], activities = [] }) => {
                               <span>
                                 {typeof activity.location === 'string' 
                                   ? activity.location 
-                                  : activity.location.name}
+                                  : activity.location.name || activity.location}
                               </span>
                             </div>
                           )}

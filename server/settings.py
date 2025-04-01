@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'django_extensions',
+    'simple_history',
 ]
 
 MIDDLEWARE = [

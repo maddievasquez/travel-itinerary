@@ -2,6 +2,7 @@
 
 # Create your views here.
 # user/views.py
+from urllib import request
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login, logout
@@ -12,8 +13,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
+from server import settings
 from server.apps.user.serializers import SignupSerializer, UserSerializer, UserSettingsSerializer  # serializer for the User model
-from server.apps.user.models import UserSettings 
+from server.apps.user.models import UserSettings, UserSettingsHistory 
 User = get_user_model()  # Fetch the custom user model if it exists
 from rest_framework.generics import ListAPIView
 from server.apps.itinerary.models import Itinerary
@@ -116,6 +118,13 @@ class UserProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    def patch(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -128,12 +137,19 @@ class UserSettingsView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        settings, _ = UserSettings.objects.get_or_create(user=request.user)
+        print("Request data:", request.data)  # Debug
+        settings, created = UserSettings.objects.get_or_create(user=request.user)
+        print("Settings object found:", settings.id, "Created:", created)  # Debug
+        
         serializer = UserSettingsSerializer(settings, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            print("Serializer is valid. Data:", serializer.validated_data)  # Debug
+            saved_settings = serializer.save()
+            print("Settings saved:", saved_settings.id)  # Debug
             return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        else:
+            print("Serializer errors:", serializer.errors)  # Debug
+            return Response(serializer.errors, status=400)
 class UserItinerariesView(ListAPIView):
     serializer_class = ItinerarySerializer
     permission_classes = [IsAuthenticated]

@@ -1,3 +1,4 @@
+import { ThemeProvider } from './Context/ThemeContext';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/layout";
