@@ -40,24 +40,11 @@ Voyaroute offers multiple layout options for users to visualize their itinerarie
 - Ideal for short trips with multiple activities per day.
 
 ### 4. **Map View**
-- Integrates Google Maps to provide a visual representation of locations.
 - Users can see routes, distances, and nearby attractions.
 
 ### 5. **Day-by-Day View**
 - Each day’s schedule is displayed in an expanded format.
-- Includes meal suggestions, transport options, and notes.
 
-### 6. **Packing Checklist View**
-- Generates a personalized checklist based on the destination and activities.
-- Users can check off items as they pack.
-
-### 7. **Budget Breakdown View**
-- Displays estimated costs for transportation, accommodation, food, and activities.
-- Users can track their expenses and set budget limits.
-
-### 8. **Shared Collaborative View**
-- Allows multiple users to edit and contribute to a shared itinerary.
-- Ideal for group travel planning.
 
 ---
 
