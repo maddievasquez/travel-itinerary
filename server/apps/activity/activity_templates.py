@@ -1,6 +1,11 @@
 # server/apps/activity/activity_templates.py
 
 ACTIVITY_TEMPLATES = {
+    'general': [
+        "Visit {location_name} and enjoy the surroundings.",
+        "Explore the beauty of {location_name}.",
+        "Spend some time at {location_name}."
+    ],
     "adventure": [
         "Explore {name} for a thrilling experience!",
         "Go on an adventure at {name} and feel the adrenaline rush!",

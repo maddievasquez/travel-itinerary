@@ -2,7 +2,7 @@ import { differenceInDays } from "date-fns";
 
 export function generateItinerary(city, startDate, endDate, cityActivities) {
   const activities = cityActivities[city] || [];
-  const days = differenceInDays(new Date(endDate), new Date(startDate)) + 1;
+  const days = differenceInDays(new Date(endDate), new Date(startDate));
   const items = [];
 
   for (let day = 1; day <= days; day++) {

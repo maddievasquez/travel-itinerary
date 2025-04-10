@@ -1,5 +1,6 @@
 from django.db import models
 from server.apps.user.models import User
+from django.contrib.auth import get_user_model
 
 class Itinerary(models.Model):
     user = models.ForeignKey(
@@ -18,5 +19,14 @@ class Itinerary(models.Model):
     def __str__(self):
         return f"{self.title} in {self.city} ({self.start_date} - {self.end_date})"
 
-    class Meta:
-        ordering = ['-start_date']
+    # class Meta:
+    #     ordering = ['-start_date']
+    # bookmarked_by = models.ManyToManyField(get_user_model(), related_name='bookmarked_itineraries', blank=True)
+
+    def __str__(self):
+        return self.title
+    
+    def is_bookmarked_by(self, user):
+        if not user or not user.is_authenticated:
+            return False
+        return self.bookmarks.filter(user=user).exists()

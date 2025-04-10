@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus } from 'lucide-react';
 import ItineraryGrid from './ItineraryGrid';
-import Button from '../ui/button';
+import Button from '../../ui/button';
 
 const ItineraryManager = ({ 
   itineraries = [], 

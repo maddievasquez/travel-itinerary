@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from uuid import UUID
 
 from server.apps.activity.activity_templates import ACTIVITY_TEMPLATES
+from server.apps.bookmark.models import Bookmark
 
 from .models import Itinerary
 from .serializers import ItinerarySerializer
@@ -22,9 +23,15 @@ from server.apps.location.models import Location
 from server.apps.location.serializers import LocationSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 # from server.apps.bookmark.models import Bookmark  # Import Bookmark model
+from rest_framework.pagination import PageNumberPagination
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class ItineraryViewSet(viewsets.ModelViewSet):
+    pagination_class = StandardResultsSetPagination
     """
     CRUD operations for itineraries using ID as lookup field
     Automatically generates activities on creation with location data for mapping
@@ -97,7 +104,7 @@ class ItineraryViewSet(viewsets.ModelViewSet):
                 
                 # Track used locations to prevent repeats across days
                 used_location_ids = set()
-                total_days = (end_date_obj - start_date_obj).days + 1
+                total_days = (end_date_obj - start_date_obj).days
                 locations_list = list(locations)
                 
                 # Calculate how many locations we should use per day to ensure we have enough variety

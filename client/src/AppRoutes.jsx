@@ -11,6 +11,8 @@ import MyItineraries from "./pages/MyItinerariesPage";
 import ItineraryPage from "./components/itinerary/ItineraryPage";
 import AboutPage from "./pages/AboutPage";
 import WelcomePage from "./pages/WelcomePage";
+import BookmarksPage from './pages/BookmarksPage';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Create a client
@@ -26,6 +28,7 @@ export default function AppRoutes() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/bookmarks" element={<BookmarksPage />} />
           
           {/* Main Layout Routes */}
           <Route element={<Layout />}>

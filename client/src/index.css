@@ -36,3 +36,15 @@ code {
   font-size: 12px;
   margin-top: 5px;
 }
+.leaflet-popup-content {
+  margin: 8px 12px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.custom-popup .leaflet-popup-content {
+  margin: 12px;
+  min-width: 200px;
+}

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'server.apps.itinerary', # Custom app
     'server.apps.location',  # Custom app
     'server.apps.activity', # Custom app
+    'server.apps.bookmark', # Custom app
     'django_filters',
     'drf_yasg',
     'rest_framework_simplejwt',

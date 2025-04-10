@@ -6,6 +6,9 @@ from .views import (
     itinerary_activities,
     ItineraryDetailView,
     delete_itinerary,
+    check_bookmark_status,
+    # toggle_bookmark,
+    # get_bookmarked_itineraries,
 )
 
 # Create a router and register the ItineraryViewSet (CRUD operations)
@@ -16,7 +19,7 @@ urlpatterns = [
     # Include the router URLs (for CRUD operations on itineraries)
     path('', include(router.urls)),
     
-    # Generate an itinerary - no longer nested under 'itineraries/'
+    # Generate an itinerary
     path('generate/', ItineraryGeneratorAPIView.as_view(), name='generate-itinerary'),
     
     # Retrieve all activities for a specific itinerary
@@ -30,4 +33,11 @@ urlpatterns = [
     # Delete an itinerary
     path('<uuid:id>/delete/', delete_itinerary, name='delete-itinerary'),
     path('<int:id>/delete/', delete_itinerary, name='delete-itinerary-int'),
+    
+    # Bookmark related endpoints
+    path('<uuid:id>/check-bookmark/', check_bookmark_status, name='check-bookmark'),
+    path('<int:id>/check-bookmark/', check_bookmark_status, name='check-bookmark-int'),
+    # path('<uuid:id>/toggle-bookmark/', toggle_bookmark, name='toggle-bookmark'),
+    # path('<int:id>/toggle-bookmark/', toggle_bookmark, name='toggle-bookmark-int'),
+    # path('bookmarked/', get_bookmarked_itineraries, name='bookmarked-itineraries'),
 ]

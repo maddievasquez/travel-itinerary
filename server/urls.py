@@ -10,6 +10,8 @@ from drf_yasg import openapi
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from django.contrib.auth import views as auth_views
 
+from server.apps.bookmark import views
+
 # Schema view to generate Swagger documentation
 schema_view = get_schema_view(
    openapi.Info(
@@ -33,7 +35,9 @@ urlpatterns = [
     path('api/auth/', include('server.apps.user.urls')),
     path('api/locations/', include('server.apps.location.urls')),
     path('api/activities/', include('server.apps.activity.urls')),
-    
+     path('itineraries/<int:itinerary_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
+    path('itineraries/<int:itinerary_id>/bookmark/status/', views.check_bookmark_status, name='check_bookmark_status'),
+    path('bookmarks/', views.get_user_bookmarks, name='user_bookmarks'),
     # Authentication
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

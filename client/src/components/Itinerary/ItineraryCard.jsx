@@ -1,133 +1,122 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus, Calendar, User } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus, Calendar } from 'lucide-react';
 
 const ItineraryCard = ({ 
   day, 
   locations = [], 
   activities = [], 
-  itinerary, 
-  onClick, 
-  minimal = false 
+  selectedDay = null,
+  onDaySelect = () => {},
+  usedLocations = [],
+  allLocations = [],
+  start_date,
+  end_date
 }) => {
   const [expanded, setExpanded] = useState(true);
 
+  // Calculate duration in days based on start and end dates - fixed calculation
+  const calculateDuration = useMemo(() => {
+    if (!start_date || !end_date) return { days: null, text: '' };
+    
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+    
+    // Reset time components to get exact day difference
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    
+    // Calculate difference in days (add 1 because end date is inclusive)
+    const diffTime = endDate - startDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Ensure minimum of 1 day
+    const days = Math.max(1, diffDays);
+    const text = `${days} ${days === 1 ? 'day' : 'days'}`;
+    
+    return { days, text };
+  }, [start_date, end_date]);
+
+  // Extract locations from activities if main locations array is empty
+  const effectiveLocations = useMemo(() => {
+    if (locations.length > 0) return locations;
+    return activities
+      .map(activity => activity.location)
+      .filter(loc => loc && loc.id) // Ensure we have valid locations
+      .reduce((unique, loc) => {
+        return unique.some(u => u.id === loc.id) ? unique : [...unique, loc];
+      }, []);
+  }, [locations, activities]);
+  
+  // Get unique locations for this day
+  const uniqueLocations = useMemo(() => {
+    if (!allLocations.length || !usedLocations.length) return locations;
+    return locations.filter(loc => 
+      !usedLocations.some(used => used.id === loc.id)
+    ) || locations;
+  }, [locations, usedLocations, allLocations]);
+
   // Get appropriate icon for activity type
   const getActivityIcon = (category) => {
-    switch (category?.toLowerCase()) {
-      case 'food':
-      case 'restaurant':
-        return <Utensils className="h-4 w-4 text-red-500" />;
-      case 'hotel':
-      case 'accommodation':
-        return <Hotel className="h-4 w-4 text-blue-500" />;
-      case 'attraction':
-      case 'landmark':
-        return <Landmark className="h-4 w-4 text-green-500" />;
-      case 'cafe':
-      case 'coffee':
-        return <Coffee className="h-4 w-4 text-yellow-500" />;
-      case 'transport':
-      case 'transit':
-        return <Bus className="h-4 w-4 text-purple-500" />;
-      default:
-        return <MapPin className="h-4 w-4 text-teal-500" />;
-    }
+    const icons = {
+      food: <Utensils className="h-4 w-4 text-red-500" />,
+      restaurant: <Utensils className="h-4 w-4 text-red-500" />,
+      hotel: <Hotel className="h-4 w-4 text-blue-500" />,
+      accommodation: <Hotel className="h-4 w-4 text-blue-500" />,
+      attraction: <Landmark className="h-4 w-4 text-green-500" />,
+      landmark: <Landmark className="h-4 w-4 text-green-500" />,
+      cafe: <Coffee className="h-4 w-4 text-yellow-500" />,
+      coffee: <Coffee className="h-4 w-4 text-yellow-500" />,
+      transport: <Bus className="h-4 w-4 text-purple-500" />,
+      transit: <Bus className="h-4 w-4 text-purple-500" />
+    };
+    return icons[category?.toLowerCase()] || <MapPin className="h-4 w-4 text-teal-500" />;
   };
 
-  // Ensure activities and locations are arrays
-  const activitiesList = Array.isArray(activities) ? activities : [];
-  const locationsList = Array.isArray(locations) ? locations : [];
-
-  // Sort activities by start_time if available
-  const sortedActivities = [...activitiesList].sort((a, b) => {
-    if (!a.start_time || !b.start_time) return 0;
-    return a.start_time.localeCompare(b.start_time);
-  });
-
-  // Render minimal card for itinerary overview
-  if (itinerary) {
-    return (
-      <div 
-        className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-white cursor-pointer"
-        onClick={onClick}
-      >
-        <div className="p-4 h-full flex flex-col">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
-              {itinerary.title || "Untitled Itinerary"}
-            </h3>
-            {!minimal && itinerary.status && (
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                itinerary.status === 'published' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-yellow-100 text-yellow-800'
-              }`}>
-                {itinerary.status}
-              </span>
-            )}
-          </div>
-          
-          <div className="flex-grow">
-            {!minimal && itinerary.description && (
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                {itinerary.description}
-              </p>
-            )}
-            
-            <div className="space-y-2">
-              {itinerary.city && (
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-2 text-teal-500" />
-                  <span className="text-sm">
-                    {itinerary.city}
-                    {itinerary.country && `, ${itinerary.country}`}
-                  </span>
-                </div>
-              )}
-              
-              {itinerary.start_date && (
-                <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-2 text-teal-500" />
-                  <span className="text-sm">
-                    {new Date(itinerary.start_date).toLocaleDateString()}
-                    {itinerary.end_date && ` → ${new Date(itinerary.end_date).toLocaleDateString()}`}
-                  </span>
-                </div>
-              )}
-              
-              {!minimal && (
-                <div className="flex items-center text-gray-700">
-                  <span className="text-sm">
-                    {itinerary.days?.length || 0} days • 
-                    {itinerary.total_locations || 0} locations
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        
-        {!minimal && (
-          <div className="border-t border-gray-200 px-4 py-2 bg-gray-50">
-            <span className="text-xs text-gray-500">
-              {itinerary.updated_at && `Last updated: ${new Date(itinerary.updated_at).toLocaleDateString()}`}
-            </span>
-          </div>
-        )}
-      </div>
+  // Sort activities by start_time
+  const sortedActivities = useMemo(() => {
+    return [...(Array.isArray(activities) ? activities : [])].sort((a, b) => 
+      (a.start_time || '').localeCompare(b.start_time || '')
     );
+  }, [activities]);
+
+  // Handle day selection and expansion
+  const handleDayHeaderClick = () => {
+    const newExpanded = !expanded;
+    setExpanded(newExpanded);
+    onDaySelect(newExpanded ? day : null);
+  };
+
+  // Skip rendering if this day is beyond the actual duration
+  if (calculateDuration.days !== null && day > calculateDuration.days) {
+    return null;
   }
 
-  // Render detailed card for day view
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+    <div className={`bg-white rounded-lg shadow-md overflow-hidden border ${
+      selectedDay === day ? 'border-teal-500 ring-2 ring-teal-200' : 'border-gray-200'
+    }`}>
       <div 
-        className="bg-gradient-to-r from-teal-600 to-blue-700 text-white py-3 px-4 flex justify-between items-center cursor-pointer"
-        onClick={() => setExpanded(!expanded)}
+        className={`bg-gradient-to-r ${
+          selectedDay === day ? 'from-teal-700 to-blue-800' : 'from-teal-600 to-blue-700'
+        } text-white py-3 px-4 flex justify-between items-center cursor-pointer`}
+        onClick={handleDayHeaderClick}
       >
         <div className="flex items-center">
           <span className="bg-white/20 p-1 rounded-full mr-2">
             <span className="font-bold">Day {day}</span>
+          </span>
+          <span className="text-sm font-medium">
+            {uniqueLocations.length > 0 && `${uniqueLocations.length} location${uniqueLocations.length !== 1 ? 's' : ''}`}
+            {uniqueLocations.length > 0 && sortedActivities.length > 0 && ' • '}
+            {sortedActivities.length > 0 && `${sortedActivities.length} activit${sortedActivities.length !== 1 ? 'ies' : 'y'}`}
+            {calculateDuration.days && start_date && end_date && day === 1 && ' • '}
+            {calculateDuration.days && start_date && end_date && day === 1 && (
+              <span className="flex items-center ml-1">
+                <Calendar className="h-3 w-3 mr-1" />
+                {calculateDuration.text}
+              </span>
+            )}
           </span>
         </div>
         <button className="focus:outline-none hover:bg-white/10 p-1 rounded">
@@ -137,27 +126,29 @@ const ItineraryCard = ({
       
       {expanded && (
         <div className="p-4 space-y-4">
-          {/* Locations Section */}
-          {locationsList.length > 0 && (
+          {start_date && end_date && day === 1 && (
+            <div className="mb-2 text-sm text-gray-600 flex items-center">
+              <Calendar className="h-4 w-4 mr-2 text-teal-500" />
+              <span>
+                {new Date(start_date).toLocaleDateString()} - {new Date(end_date).toLocaleDateString()} 
+                ({calculateDuration.text})
+              </span>
+            </div>
+          )}
+          
+          {uniqueLocations.length > 0 && (
             <div className="mb-4">
               <h4 className="font-medium text-gray-700 mb-2 flex items-center">
                 <MapPin className="h-4 w-4 mr-2 text-teal-500" />
                 Locations
               </h4>
               <div className="space-y-3">
-                {locationsList.map((location, index) => (
-                  <div 
-                    key={`location-${index}`} 
-                    className="flex items-start pl-2 hover:bg-gray-50 rounded p-1"
-                  >
+                {uniqueLocations.map((location, index) => (
+                  <div key={`location-${location.id || index}`} className="flex items-start pl-2 hover:bg-gray-50 rounded p-1">
                     <MapPin className="h-4 w-4 mt-0.5 mr-2 text-teal-500 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-gray-800">
-                        {location.name || 'Unnamed Location'}
-                      </p>
-                      {location.address && (
-                        <p className="text-sm text-gray-600 mt-1">{location.address}</p>
-                      )}
+                      <p className="font-medium text-gray-800">{location.name || 'Unnamed Location'}</p>
+                      {location.address && <p className="text-sm text-gray-600 mt-1">{location.address}</p>}
                     </div>
                   </div>
                 ))}
@@ -165,7 +156,6 @@ const ItineraryCard = ({
             </div>
           )}
 
-          {/* Activities Section */}
           <div>
             <h4 className="font-medium text-gray-700 mb-2 flex items-center">
               <Clock className="h-4 w-4 mr-2 text-teal-500" />
@@ -177,10 +167,7 @@ const ItineraryCard = ({
             ) : (
               <div className="space-y-3">
                 {sortedActivities.map((activity, index) => (
-                  <div 
-                    key={`day-${day}-activity-${index}`}
-                    className="border-l-3 border-teal-500 pl-3 py-2 hover:bg-gray-50 rounded"
-                  >
+                  <div key={`activity-${activity.id || index}`} className="border-l-3 border-teal-500 pl-3 py-2 hover:bg-gray-50 rounded">
                     <div className="flex items-start">
                       {getActivityIcon(activity.category)}
                       <div className="ml-2">
@@ -228,6 +215,29 @@ const ItineraryCard = ({
       )}
     </div>
   );
+};
+
+ItineraryCard.propTypes = {
+  day: PropTypes.number.isRequired,
+  locations: PropTypes.array,
+  activities: PropTypes.array,
+  selectedDay: PropTypes.number,
+  onDaySelect: PropTypes.func,
+  usedLocations: PropTypes.array,
+  allLocations: PropTypes.array,
+  start_date: PropTypes.string,
+  end_date: PropTypes.string
+};
+
+ItineraryCard.defaultProps = {
+  locations: [],
+  activities: [],
+  selectedDay: null,
+  onDaySelect: () => {},
+  usedLocations: [],
+  allLocations: [],
+  start_date: null,
+  end_date: null
 };
 
 export default ItineraryCard;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Calendar, Users, Globe, Plus, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, Globe, Plus, ArrowRight } from 'lucide-react';
 
 const WelcomePage = () => {
   return (
@@ -11,8 +11,7 @@ const WelcomePage = () => {
           Plan Your Perfect Trip
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-          Create, organize, and share your travel itineraries with ease. 
-          Start exploring the world your way.
+          Create and organize your travel itineraries with ease. Start exploring the world your way.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link 
@@ -31,12 +30,12 @@ const WelcomePage = () => {
       </header>
 
       {/* Features Section */}
-      <section className="py-16 px-4 max-w-6xl mx-auto">
+      <section className="py-16 px-4 max-w-5xl mx-auto">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
           Why Use Our Travel Planner?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow max-w-sm w-full">
             <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
               <MapPin className="text-blue-600" size={24} />
             </div>
@@ -45,24 +44,14 @@ const WelcomePage = () => {
               Create day-by-day plans with activities, locations, and time slots.
             </p>
           </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+
+          <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow max-w-sm w-full">
             <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
               <Calendar className="text-green-600" size={24} />
             </div>
             <h3 className="text-xl font-semibold mb-2">Date Management</h3>
             <p className="text-gray-600">
               Easily adjust your travel dates and see your plans update automatically.
-            </p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-              <Users className="text-purple-600" size={24} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Share With Friends</h3>
-            <p className="text-gray-600">
-              Collaborate on trip plans or share your final itinerary with travel companions.
             </p>
           </div>
         </div>
