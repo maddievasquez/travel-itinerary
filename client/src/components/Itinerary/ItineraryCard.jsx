@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus, Calendar } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, Clock, Utensils, Hotel, Landmark, Coffee, Bus, Calendar, GripVertical } from 'lucide-react';
 
 const ItineraryCard = ({ 
   day, 
@@ -11,9 +11,21 @@ const ItineraryCard = ({
   usedLocations = [],
   allLocations = [],
   start_date,
-  end_date
+  end_date,
+  onActivitiesReorder = () => {}
 }) => {
   const [expanded, setExpanded] = useState(true);
+  const [draggedActivityIndex, setDraggedActivityIndex] = useState(null);
+  const [localActivities, setLocalActivities] = useState([]);
+
+  // Initialize local activities state
+  useEffect(() => {
+    if (Array.isArray(activities)) {
+      setLocalActivities([...activities].sort((a, b) => 
+        (a.start_time || '').localeCompare(b.start_time || '')
+      ));
+    }
+  }, [activities]);
 
   // Calculate duration in days based on start and end dates - fixed calculation
   const calculateDuration = useMemo(() => {
@@ -40,13 +52,13 @@ const ItineraryCard = ({
   // Extract locations from activities if main locations array is empty
   const effectiveLocations = useMemo(() => {
     if (locations.length > 0) return locations;
-    return activities
+    return localActivities
       .map(activity => activity.location)
       .filter(loc => loc && loc.id) // Ensure we have valid locations
       .reduce((unique, loc) => {
         return unique.some(u => u.id === loc.id) ? unique : [...unique, loc];
       }, []);
-  }, [locations, activities]);
+  }, [locations, localActivities]);
   
   // Get unique locations for this day
   const uniqueLocations = useMemo(() => {
@@ -73,18 +85,39 @@ const ItineraryCard = ({
     return icons[category?.toLowerCase()] || <MapPin className="h-4 w-4 text-teal-500" />;
   };
 
-  // Sort activities by start_time
-  const sortedActivities = useMemo(() => {
-    return [...(Array.isArray(activities) ? activities : [])].sort((a, b) => 
-      (a.start_time || '').localeCompare(b.start_time || '')
-    );
-  }, [activities]);
-
   // Handle day selection and expansion
   const handleDayHeaderClick = () => {
     const newExpanded = !expanded;
     setExpanded(newExpanded);
     onDaySelect(newExpanded ? day : null);
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (index) => {
+    setDraggedActivityIndex(index);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedActivityIndex === null || draggedActivityIndex === index) return;
+    
+    // Reorder the activities
+    const newActivities = [...localActivities];
+    const draggedActivity = newActivities[draggedActivityIndex];
+    
+    // Remove the dragged item
+    newActivities.splice(draggedActivityIndex, 1);
+    // Insert it at the new position
+    newActivities.splice(index, 0, draggedActivity);
+    
+    setLocalActivities(newActivities);
+    setDraggedActivityIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedActivityIndex(null);
+    // Notify parent component about the reordering
+    onActivitiesReorder(localActivities, day);
   };
 
   // Skip rendering if this day is beyond the actual duration
@@ -108,8 +141,8 @@ const ItineraryCard = ({
           </span>
           <span className="text-sm font-medium">
             {uniqueLocations.length > 0 && `${uniqueLocations.length} location${uniqueLocations.length !== 1 ? 's' : ''}`}
-            {uniqueLocations.length > 0 && sortedActivities.length > 0 && ' • '}
-            {sortedActivities.length > 0 && `${sortedActivities.length} activit${sortedActivities.length !== 1 ? 'ies' : 'y'}`}
+            {uniqueLocations.length > 0 && localActivities.length > 0 && ' • '}
+            {localActivities.length > 0 && `${localActivities.length} activit${localActivities.length !== 1 ? 'ies' : 'y'}`}
             {calculateDuration.days && start_date && end_date && day === 1 && ' • '}
             {calculateDuration.days && start_date && end_date && day === 1 && (
               <span className="flex items-center ml-1">
@@ -160,15 +193,33 @@ const ItineraryCard = ({
             <h4 className="font-medium text-gray-700 mb-2 flex items-center">
               <Clock className="h-4 w-4 mr-2 text-teal-500" />
               Activities
+              <span className="ml-2 text-sm text-gray-500 italic">
+                (Drag to reorder)
+              </span>
             </h4>
             
-            {sortedActivities.length === 0 ? (
+            {localActivities.length === 0 ? (
               <p className="text-gray-500 italic pl-2">No activities planned for this day</p>
             ) : (
               <div className="space-y-3">
-                {sortedActivities.map((activity, index) => (
-                  <div key={`activity-${activity.id || index}`} className="border-l-3 border-teal-500 pl-3 py-2 hover:bg-gray-50 rounded">
-                    <div className="flex items-start">
+                {localActivities.map((activity, index) => (
+                  <div 
+                    key={`activity-${activity.id || index}`} 
+                    className={`border-l-3 border-teal-500 pl-3 py-2 hover:bg-gray-50 rounded flex items-start ${
+                      draggedActivityIndex === index ? 'bg-blue-50 border border-blue-200' : ''
+                    }`}
+                    draggable="true"
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div 
+                      className="mr-2 cursor-grab flex items-center"
+                      title="Drag to reorder"
+                    >
+                      <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    </div>
+                    <div className="flex items-start flex-1">
                       {getActivityIcon(activity.category)}
                       <div className="ml-2">
                         <h4 className="font-medium text-gray-800">
@@ -226,7 +277,8 @@ ItineraryCard.propTypes = {
   usedLocations: PropTypes.array,
   allLocations: PropTypes.array,
   start_date: PropTypes.string,
-  end_date: PropTypes.string
+  end_date: PropTypes.string,
+  onActivitiesReorder: PropTypes.func
 };
 
 ItineraryCard.defaultProps = {
@@ -237,7 +289,8 @@ ItineraryCard.defaultProps = {
   usedLocations: [],
   allLocations: [],
   start_date: null,
-  end_date: null
+  end_date: null,
+  onActivitiesReorder: () => {}
 };
 
 export default ItineraryCard;

@@ -40,6 +40,18 @@ export default function ItineraryPage() {
     }
   };
   
+  // Check if an itinerary is bookmarked
+  const checkIsBookmarked = async (itineraryId) => {
+    try {
+      const endpoint = `${API_URL}/itineraries/${itineraryId}/bookmark/`;
+      const response = await axios.get(endpoint);
+      return response.data.is_bookmarked || false;
+    } catch (error) {
+      console.error('Bookmark check error:', error);
+      return false;
+    }
+  };
+  
   // Use the custom hooks
   const { 
     itinerary, 
@@ -67,7 +79,14 @@ export default function ItineraryPage() {
       });
       
       if (auth.checkAuthStatus()) {
-        // Bookmark status check logic
+        // Check if the itinerary is already bookmarked
+        checkIsBookmarked(id)
+          .then(isBookmarked => {
+            setIsBookmarked(isBookmarked);
+          })
+          .catch(err => {
+            console.error("Failed to check bookmark status:", err);
+          });
       }
     } else {
       navigate("/");
@@ -148,6 +167,26 @@ export default function ItineraryPage() {
   const handleDaySelect = (day) => {
     // Toggle day selection - if day is already selected, deselect it (show all locations)
     setSelectedDay(day === selectedDay ? null : day);
+  };
+
+  // Handle reordering of activities within a day
+  const handleActivitiesReorder = (reorderedActivities, day) => {
+    // You would typically update your backend here
+    console.log(`Reordered activities for day ${day}:`, reorderedActivities);
+    
+    // For now, just update the local state to reflect changes
+    if (itinerary && itinerary.days) {
+      const updatedDays = itinerary.days.map(dayData => {
+        if (dayData.day === day) {
+          return { ...dayData, activities: reorderedActivities };
+        }
+        return dayData;
+      });
+      
+      // Update the itinerary with reordered activities
+      // This assumes useItinerary hook has a way to update the local state
+      // If not, you would need to implement that or use a different state management approach
+    }
   };
 
   // Check if user is authorized to edit
@@ -264,6 +303,10 @@ export default function ItineraryPage() {
   // This prevents map rerendering on every scroll or state update
   const mapKey = `map-${selectedDay}-${displayLocations.map(loc => loc.id).join('-')}`;
   
+  // Determine if Save button should be shown - showing only for authenticated users
+  // who are not the creator of the itinerary
+  const showSaveButton = auth.checkAuthStatus() && itinerary?.user_id !== parseInt(localStorage.getItem('userId'));
+  
   return (
     <div className="max-w-6xl mx-auto p-4">
       <header className="mb-8">
@@ -304,17 +347,20 @@ export default function ItineraryPage() {
               Share
             </button>
             
-            <button
-              onClick={handleBookmark}
-              className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
-                isBookmarked 
-                  ? 'border-teal-600 text-teal-600 bg-teal-50 hover:bg-teal-100' 
-                  : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-              }`}
-            >
-              <Bookmark className={`h-4 w-4 mr-1 ${isBookmarked ? 'fill-teal-600' : ''}`} />
-              {isBookmarked ? 'Saved' : 'Save'}
-            </button>
+            {/* Conditional rendering of Save button */}
+            {showSaveButton && (
+              <button
+                onClick={handleBookmark}
+                className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+                  isBookmarked 
+                    ? 'border-teal-600 text-teal-600 bg-teal-50 hover:bg-teal-100' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 mr-1 ${isBookmarked ? 'fill-teal-600' : ''}`} />
+                {isBookmarked ? 'Saved' : 'Save'}
+              </button>
+            )}
             
             {canEdit && (
               <button
@@ -370,6 +416,7 @@ export default function ItineraryPage() {
               activities={Array.isArray(day.activities) ? day.activities : []}
               selectedDay={selectedDay}
               onDaySelect={(day) => handleDaySelect(index + 1)}
+              onActivitiesReorder={handleActivitiesReorder}
             />
           ))}
         </div>

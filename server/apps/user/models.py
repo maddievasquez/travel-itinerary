@@ -5,6 +5,8 @@ from simple_history.models import HistoricalRecords
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     is_premium = models.BooleanField(default=False)  
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
 
     def generate_avatar(self):
         """Generate an avatar using the user's initials."""

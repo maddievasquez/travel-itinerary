@@ -65,7 +65,6 @@ class SignupView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Login
-# In your views.py
 class LoginView(APIView):
     permission_classes = [AllowAny]
     

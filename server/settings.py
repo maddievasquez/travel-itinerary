@@ -124,7 +124,7 @@ import environ
 env = environ.Env()
 environ.Env.read_env()  # Reads .env file
 
-# Example usage
+
 SECRET_KEY = env('SECRET_KEY')
 
 DATABASES = {
@@ -191,7 +191,6 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
          'rest_framework_simplejwt.authentication.JWTAuthentication',
-        #  'rest_framework.authentication.SessionAuthentication',
         #  'rest_framework.authentication.SessionAuthentication',  # For logged-in users
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -262,3 +261,5 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+
