@@ -14,14 +14,14 @@
   - [x] Sign-up form
   - [x] Login form
   - [ ] Google OAuth integration
-- [ ] Create main pages:
+- [x] Create main pages:
   - [x] Home page
   - [x] Itinerary builder page
   - [x] User dashboard
   - [ ] Activity search and filter page
 - [x] Integrate front-end with API endpoints.
 - [x] Implement client-side validation for forms.
-- [ ] Add responsive design and mobile support.
+- [] Add responsive design and mobile support.
 
 ## Back-End Tasks
 
@@ -35,7 +35,7 @@
   - [x] Category table
   - [x] Recommendation table
 - [x] Develop API endpoints:
-  - [ ] User authentication (sign-up, login, logout, Google OAuth)
+  - [x] User authentication (sign-up, login, logout, Google OAuth)
   - [x] CRUD operations for itineraries [todo: test it]
   - [x] Search and filter for activities [todo: test it]
 - [x] Develop View for API each endpoint
@@ -60,23 +60,23 @@
 
 ## Testing and QA
 
-- [ ] Write unit tests for Django models and API endpoints.
-- [ ] Write unit tests for React components.
-- [ ] Perform integration testing for end-to-end functionality.
-- [ ] Conduct usability testing with team members.
+- [x] Write unit tests for Django models and API endpoints.
+- [] Write unit tests for React components.
+- [x] Perform integration testing for end-to-end functionality.
+- [x] ] Conduct usability testing with team members.
 
 ## Documentation
 
-- [ ] Write README file with project setup instructions.
-- [ ] Document API endpoints with Swagger/OpenAPI.
+- [x] Write README file with project setup instructions.
+- [x] Document API endpoints with Swagger/OpenAPI.
 - [ ] Create user guide for the app.
-- [ ] Maintain change logs for version control.
+- [x] Maintain change logs for version control.
 
 ## Stretch Goals
 
 - [ ] Add multi-language support.
 - [ ] Implement offline mode for itineraries.
-- [ ] Add a map visualization for the itinerary.
+- [x] Add a map visualization for the itinerary.
 - [ ] Develop a recommendation engine using AI (OpenAI API).
 
 ---

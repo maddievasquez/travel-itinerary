@@ -1,5 +1,6 @@
 import os
 from decouple import config
+import rest_framework_simplejwt
 """
 Django settings for server project.
 
@@ -53,6 +54,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_extensions',
     'simple_history',
+     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -185,16 +188,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    
      'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10, #Pagination
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
          'rest_framework_simplejwt.authentication.JWTAuthentication',
+         'rest_framework.authentication.TokenAuthentication',
         #  'rest_framework.authentication.SessionAuthentication',  # For logged-in users
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.IsAuthenticated', 
         # /// TODO: set it for view specific permissions rather than global
 
     ],

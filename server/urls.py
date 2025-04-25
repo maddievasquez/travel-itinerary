@@ -11,6 +11,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from django.contrib.auth import views as auth_views
 
 from server.apps.bookmark import views
+from server.apps.itinerary.views import ItineraryViewSet
 
 # Schema view to generate Swagger documentation
 schema_view = get_schema_view(
@@ -35,6 +36,7 @@ urlpatterns = [
     path('api/auth/', include('server.apps.user.urls')),
     path('api/locations/', include('server.apps.location.urls')),
     path('api/activities/', include('server.apps.activity.urls')),
+    path('generate/', ItineraryViewSet.as_view({'post': 'generate_itinerary'}), name='itinerary-generate'),
      path('itineraries/<int:itinerary_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
     path('itineraries/<int:itinerary_id>/bookmark/status/', views.check_bookmark_status, name='check_bookmark_status'),
     path('bookmarks/', views.get_user_bookmarks, name='user_bookmarks'),

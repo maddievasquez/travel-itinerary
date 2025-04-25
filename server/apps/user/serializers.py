@@ -1,15 +1,44 @@
 from django.db import IntegrityError
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
 from .models import User, UserSettings
+from django.utils.http import urlsafe_base64_decode
 
 class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSettings
         fields = ['dark_mode', 'notifications_enabled', 'language']
-
+    
+    def to_representation(self, instance):
+        """Override to handle JSON settings field or direct model fields"""
+        # If your settings are stored in a JSON field
+        if hasattr(instance, 'settings') and isinstance(instance.settings, dict):
+            return instance.settings
+        
+        # If your settings are direct model fields
+        return {
+            'dark_mode': instance.dark_mode if hasattr(instance, 'dark_mode') else False,
+            'notifications_enabled': instance.notifications_enabled if hasattr(instance, 'notifications_enabled') else True,
+            'language': instance.language if hasattr(instance, 'language') else 'en'
+        }
+    
+    def update(self, instance, validated_data):
+        """Update the settings instance with validated data"""
+        # If settings are stored in a JSON field
+        if hasattr(instance, 'settings') and isinstance(instance.settings, dict):
+            settings = instance.settings.copy()
+            settings.update(validated_data)
+            instance.settings = settings
+        else:
+            # Update direct model fields
+            for key, value in validated_data.items():
+                setattr(instance, key, value)
+        
+        instance.save()
+        return instance
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     settings = UserSettingsSerializer(read_only=True)  
@@ -29,20 +58,37 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class ChangePasswordSerializer(serializers.ModelSerializer):
-    currentPassword = serializers.CharField(write_only=True, required=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    uid = serializers.CharField(required=True)
+    password = serializers.CharField(
+        required=True, 
+        write_only=True,
+        validators=[validate_password]
+    )
+    password_confirm = serializers.CharField(required=True, write_only=True)
 
-    class Meta:
-        model = User
-        fields = ['password', 'currentPassword']
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password_confirm = attrs.get('password_confirm')
+        token = attrs.get('token')
+        uid = attrs.get('uid')
 
-    def update(self, instance, validated_data):
-        if not instance.check_password(validated_data['currentPassword']):
-            raise serializers.ValidationError({"currentPassword": "Incorrect password."})
-        instance.set_password(validated_data['password'])
-        instance.save()
-        return instance
+        if password != password_confirm:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        # Validate the token and get user
+        try:
+            uid = urlsafe_base64_decode(uid).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError({"uid": "Invalid user ID"})
+
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError({"token": "Invalid or expired token"})
+
+        attrs['user'] = user
+        return attrs
 
 class SignupSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
